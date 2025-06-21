@@ -5,11 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="761bfd87-1a2e-487a-b9cf-ac6a07524238" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/dto/SimpleErrorResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/exception/AuthenticationException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/exception/BadRequestException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/exception/ForbiddenException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/exception/NotFoundException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/service/JwtProvider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/liquibase.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/model/Post.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/model/Post.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/backend/model/User.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +64,7 @@
     "Spring Boot.BackendApplication.executor": "Run",
     "git-widget-placeholder": "backend",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Se2my00of5/Desktop/adv-java-homework-java-2025",
+    "last_opened_file_path": "C:/Users/Se2my00of5/Desktop/project-dev/backend/src/main/java/com/example/backend",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -75,8 +81,13 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Se2my00of5\Desktop\project-dev\backend\src\main\java\com\example\backend" />
       <recent name="C:\Users\Se2my00of5\Desktop\project-dev\backend\src\main\resources" />
       <recent name="C:\Users\Se2my00of5\Desktop\project-dev\backend\src\main\resources\db\changelog" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.example.backend.dto" />
+      <recent name="com.example.backend.service" />
     </key>
   </component>
   <component name="RunManager">
@@ -105,7 +116,8 @@
       <option name="presentableId" value="Default" />
       <updated>1750135456217</updated>
       <workItem from="1750135457297" duration="258000" />
-      <workItem from="1750135728340" duration="13106000" />
+      <workItem from="1750135728340" duration="13227000" />
+      <workItem from="1750473074306" duration="807000" />
     </task>
     <servers />
   </component>
