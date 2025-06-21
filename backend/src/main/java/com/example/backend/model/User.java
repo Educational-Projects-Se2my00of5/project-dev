@@ -5,7 +5,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
@@ -21,22 +24,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @NotBlank
-    @Size(max = 50)
-    @Column(nullable = false, length = 50)
+    @Column(length = 50, nullable = false)
     private String username;
 
-    @NotBlank
-    @Size(min = 6, max = 50, message = "Пароль должен быть не менее 6 символов")
     @Column(nullable = false)
     private String password;
 
-    @NotBlank
-    @Email(message = "Некорректный email")
     @Column(nullable = false, unique = true, length = 127)
     private String email;
 
-    @NotNull
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles", // Таблица связки

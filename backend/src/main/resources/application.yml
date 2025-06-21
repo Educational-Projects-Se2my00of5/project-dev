@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db_project_dev
+    username: postgres
+    password: postgres
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # ????????? ???????????? ????????? ????? ?? ??? ???????
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+server:
+  port: 12345
+
+
+jwt:
+  secret:
+    access: QfCzUQ8hGk9cG+2Yv4WmRoM6n8gqvZ5b8k4Yl2OigvYfFc7aKqFvQeV+5yQDx5l5M0E9hLmYVZl+K7z4s8qv0A==
+    refresh: E5bT9ZlX2JX4o3z8tqfSn5cTn8c3Z8e9pLmW2gGzXvYhN6dQ3jRrSmYhFqYzKpT8K5jN2wGfDzTf9uLk8vXqRg==
+  expiration:
+    access: 6000 # 60 * 100
+    refresh: 1296000 # 60 * 60 * 24 * 15
+
