@@ -14,10 +14,26 @@ spring:
       ddl-auto: validate
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
+  security:
+    oauth2:
+      client:
+        registration:
+          # --- ???????????? ??? Google ---
+          google:
+            # ???????? ???? ??? Client ID
+            client-id: ${GOOGLE_CLIENT_ID}
+            # ???????? ???? ??? Client Secret
+            client-secret: ${GOOGLE_SECRET}
+            scope:
+              - profile
+              - email
 
 server:
   port: 12345
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
 
 jwt:
   secret:

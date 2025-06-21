@@ -7,23 +7,22 @@
 
     <!-- Здесь будут изменения -->
 
-
-    <changeSet id="1750142200702-1" author="Se2my00of5">
+    <changeSet id="1750480664755-1" author="Se2my00of5">
         <createSequence incrementBy="50" sequenceName="categories_seq" startValue="1"/>
     </changeSet>
-    <changeSet id="1750142200702-2" author="Se2my00of5">
+    <changeSet id="1750480664755-2" author="Se2my00of5">
         <createSequence incrementBy="50" sequenceName="comments_seq" startValue="1"/>
     </changeSet>
-    <changeSet id="1750142200702-3" author="Se2my00of5">
+    <changeSet id="1750480664755-3" author="Se2my00of5">
         <createSequence incrementBy="50" sequenceName="posts_seq" startValue="1"/>
     </changeSet>
-    <changeSet id="1750142200702-4" author="Se2my00of5">
+    <changeSet id="1750480664755-4" author="Se2my00of5">
         <createSequence incrementBy="50" sequenceName="roles_seq" startValue="1"/>
     </changeSet>
-    <changeSet id="1750142200702-5" author="Se2my00of5">
+    <changeSet id="1750480664755-5" author="Se2my00of5">
         <createSequence incrementBy="50" sequenceName="users_seq" startValue="1"/>
     </changeSet>
-    <changeSet id="1750142200702-6" author="Se2my00of5">
+    <changeSet id="1750480664755-6" author="Se2my00of5">
         <createTable tableName="categories">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_categories"/>
@@ -32,7 +31,7 @@
             <column name="description" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1750142200702-7" author="Se2my00of5">
+    <changeSet id="1750480664755-7" author="Se2my00of5">
         <createTable tableName="comments">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_comments"/>
@@ -47,15 +46,12 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1750142200702-8" author="Se2my00of5">
+    <changeSet id="1750480664755-8" author="Se2my00of5">
         <createTable tableName="posts">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_posts"/>
             </column>
             <column name="title" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="content" type="VARCHAR(255)">
@@ -64,14 +60,14 @@
             <column name="category_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1750142200702-9" author="Se2my00of5">
+    <changeSet id="1750480664755-9" author="Se2my00of5">
         <createTable tableName="refresh_token">
             <column name="refresh_token" type="VARCHAR(255)">
                 <constraints primaryKey="true" primaryKeyName="pk_refresh_token"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1750142200702-10" author="Se2my00of5">
+    <changeSet id="1750480664755-10" author="Se2my00of5">
         <createTable tableName="roles">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_roles"/>
@@ -81,7 +77,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1750142200702-11" author="Se2my00of5">
+    <changeSet id="1750480664755-11" author="Se2my00of5">
         <createTable tableName="user_roles">
             <column name="role_id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_roles"/>
@@ -91,7 +87,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1750142200702-12" author="Se2my00of5">
+    <changeSet id="1750480664755-12" author="Se2my00of5">
         <createTable tableName="users">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_users"/>
@@ -99,39 +95,37 @@
             <column name="username" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="password" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="password" type="VARCHAR(255)"/>
             <column name="email" type="VARCHAR(127)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1750142200702-13" author="Se2my00of5">
+    <changeSet id="1750480664755-13" author="Se2my00of5">
         <addUniqueConstraint columnNames="title" constraintName="uc_posts_title" tableName="posts"/>
     </changeSet>
-    <changeSet id="1750142200702-14" author="Se2my00of5">
+    <changeSet id="1750480664755-14" author="Se2my00of5">
         <addUniqueConstraint columnNames="email" constraintName="uc_users_email" tableName="users"/>
     </changeSet>
-    <changeSet id="1750142200702-15" author="Se2my00of5">
+    <changeSet id="1750480664755-15" author="Se2my00of5">
         <addForeignKeyConstraint baseColumnNames="post_id" baseTableName="comments" constraintName="FK_COMMENTS_ON_POST"
                                  referencedColumnNames="id" referencedTableName="posts"/>
     </changeSet>
-    <changeSet id="1750142200702-16" author="Se2my00of5">
+    <changeSet id="1750480664755-16" author="Se2my00of5">
         <addForeignKeyConstraint baseColumnNames="user-id" baseTableName="comments"
                                  constraintName="FK_COMMENTS_ON_USER-ID" referencedColumnNames="id"
                                  referencedTableName="users"/>
     </changeSet>
-    <changeSet id="1750142200702-17" author="Se2my00of5">
+    <changeSet id="1750480664755-17" author="Se2my00of5">
         <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="posts"
                                  constraintName="FK_POSTS_ON_CATEGORY" referencedColumnNames="id"
                                  referencedTableName="categories"/>
     </changeSet>
-    <changeSet id="1750142200702-18" author="Se2my00of5">
+    <changeSet id="1750480664755-18" author="Se2my00of5">
         <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="user_roles" constraintName="fk_userol_on_role"
                                  referencedColumnNames="id" referencedTableName="roles"/>
     </changeSet>
-    <changeSet id="1750142200702-19" author="Se2my00of5">
+    <changeSet id="1750480664755-19" author="Se2my00of5">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_roles" constraintName="fk_userol_on_user"
                                  referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
@@ -147,4 +141,6 @@
             <column name="name" value="ROLE_ADMIN"/>
         </insert>
     </changeSet>
+
+
 </databaseChangeLog>
