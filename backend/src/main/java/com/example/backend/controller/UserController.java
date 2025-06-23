@@ -43,7 +43,7 @@ public class UserController {
         return ResponseEntity.ok(userService.updatePassword(authHeader, editPassword));
     }
 
-    @GetMapping("/users")
+    @GetMapping("/all")
     public ResponseEntity<List<UserDTO.Response.ShortProfile>> getUsers() {
         return ResponseEntity.ok(userService.getUsers());
     }

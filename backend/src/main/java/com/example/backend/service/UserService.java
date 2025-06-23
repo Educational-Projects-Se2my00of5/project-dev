@@ -31,7 +31,9 @@ public class UserService {
         User user = getUserFromAuthHeader(authHeader);
 
         // При добавлении новых полей добавить и сюда
-        user.setUsername(userData.getUsername());
+        if (userData.getUsername() != null) {
+            user.setUsername(userData.getUsername());
+        }
 
         userRepository.save(user);
 

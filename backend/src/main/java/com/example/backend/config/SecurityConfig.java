@@ -81,6 +81,8 @@ public class SecurityConfig {
                         // поинты user
                         .requestMatchers("/user/profile/**").authenticated()
                         .requestMatchers("/user/**").permitAll()
+                        // поинты доступные админу
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> {

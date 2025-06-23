@@ -19,7 +19,6 @@ public interface UserMapper {
     @Mapping(source = "refreshToken", target = "refreshToken")
     UserDTO.Response.PairTokens toPairTokensDTO(String accessToken, String refreshToken);
 
-
     UserDTO.Response.FullProfile toFullProfileDTO(User user);
 
     List<UserDTO.Response.ShortProfile> toListUsersDTO(List<User> users);
