@@ -3,14 +3,10 @@ package com.example.backend.dto;
 import com.example.backend.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.Value;
-
 
 import java.util.Set;
 
@@ -23,37 +19,54 @@ public enum UserDTO {
         @Value
         public static class Register implements Username, Email, Password {
 
+            @NotBlank
             String username;
 
+            @NotBlank
             String email;
 
+            @NotBlank
             String password;
         }
 
         @Value
         public static class Login implements Email, Password {
 
+            @NotBlank
             String email;
+
+            @NotBlank
+            String password;
+        }
+
+        @Data
+        public static class EditProfile implements Username {
+
+            String username;
+        }
+
+        @Data
+        public static class EditUser implements Username, Password {
+
+            String username;
 
             String password;
         }
 
         @Value
-        public static class EditUsername implements Username {
-            String username;
-        }
-
-        @Value
         public static class EditPassword implements OldPassword, Password {
 
+            @NotBlank
             String oldPassword;
 
+            @NotBlank
             @Schema(description = "Новый пароль", example = "newpassword123")
             String password;
         }
 
         @Value
         public static class RefreshToken implements UserDTO.RefreshToken {
+            @NotBlank
             String refreshToken;
         }
     }
@@ -72,7 +85,7 @@ public enum UserDTO {
         }
 
         @Value
-        public static class Profile implements Id, Username, Email, Password, Roles {
+        public static class FullProfile implements Id, Username, Email, Roles {
 
             Long id;
 
@@ -80,9 +93,15 @@ public enum UserDTO {
 
             String email;
 
-            String password;
-
             Set<Role> roles;
+        }
+
+        @Value
+        public static class ShortProfile implements Id, Username {
+
+            Long id;
+
+            String username;
         }
 
         @Value
@@ -104,52 +123,45 @@ public enum UserDTO {
     }
 
     private interface Username {
-        @NotBlank
         @Schema(description = "Имя пользователя", example = "john_doe")
         String getUsername();
     }
 
     private interface OldPassword {
-        @NotBlank
         @Size(min = 6, max = 50, message = "Пароль должен быть от 6 до 50 символов")
         @Schema(description = "Старый пароль", example = "newpassword123")
         String getPassword();
     }
 
     private interface Password {
-        @NotBlank
         @Size(min = 6, max = 50, message = "Пароль должен быть от 6 до 50 символов")
         @Schema(description = "Пароль", example = "newpassword123")
         String getPassword();
     }
 
     private interface Email {
-        @NotBlank
         @jakarta.validation.constraints.Email
         @Schema(description = "Email", example = "john@example.com")
         String getEmail();
     }
 
     private interface Roles {
-        @NotNull
         @Schema(description = "Список ролей пользователя", example = "[\"ROLE_USER\"]")
         Set<Role> getRoles();
     }
 
     private interface AccessToken {
-        @NotBlank
         @Schema(description = "Access токен", example = "eyJhbGciOiJIUzI1NiIsInR...")
         String getAccessToken();
     }
 
     private interface RefreshToken {
-        @NotBlank
         @Schema(description = "Refresh токен", example = "eyJhbGciOiJIUzI1NiIsInR...")
         String getRefreshToken();
     }
 
     private interface Message {
-        @NotBlank
+
         @Schema(description = "Сообщение", example = "Операция выполнена успешно")
         String getMessage();
     }

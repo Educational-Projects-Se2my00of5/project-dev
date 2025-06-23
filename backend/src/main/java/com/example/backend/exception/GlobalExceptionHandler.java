@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.nio.ByteBuffer;
@@ -77,7 +78,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<SimpleErrorResponseDTO> handleNotFound(NoResourceFoundException ex) {
 
-        log.info("Resource not found: {}", ex.getMessage());
+        log.warn("Resource not found: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new SimpleErrorResponseDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
@@ -87,7 +88,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<SimpleErrorResponseDTO> handleNotFound(MissingRequestHeaderException ex) {
 
-        log.info("Missing Header: {}", ex.getMessage());
+        log.warn("Missing Header: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new SimpleErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
@@ -100,6 +101,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new SimpleErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), "Invalid request body format. Please check your JSON."));
+    }
+
+    // для неправильного типа значения в параметрах запроса
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<SimpleErrorResponseDTO> handleInvalidJson(MethodArgumentTypeMismatchException ex) {
+        log.warn("Bad Request: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new SimpleErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), "Method parameter type invalid. Please check your request URL."));
     }
 
     @ExceptionHandler(Exception.class)

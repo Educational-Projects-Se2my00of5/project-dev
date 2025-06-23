@@ -78,6 +78,11 @@ public class SecurityConfig {
                         // поинты аутентификации
                         .requestMatchers("/auth/logout").authenticated()
                         .requestMatchers("/auth/**", "/oauth2/**").permitAll()
+                        // поинты user
+                        .requestMatchers("/user/profile/**").authenticated()
+                        .requestMatchers("/user/**").permitAll()
+                        // поинты доступные админу
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> {
