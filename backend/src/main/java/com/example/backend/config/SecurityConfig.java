@@ -78,6 +78,9 @@ public class SecurityConfig {
                         // поинты аутентификации
                         .requestMatchers("/auth/logout").authenticated()
                         .requestMatchers("/auth/**", "/oauth2/**").permitAll()
+                        // поинты user
+                        .requestMatchers("/user/profile/**").authenticated()
+                        .requestMatchers("/user/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> {

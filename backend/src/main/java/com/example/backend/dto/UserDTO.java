@@ -39,7 +39,7 @@ public enum UserDTO {
         }
 
         @Value
-        public static class EditUsername implements Username {
+        public static class EditProfile implements Username {
             String username;
         }
 
@@ -72,7 +72,7 @@ public enum UserDTO {
         }
 
         @Value
-        public static class Profile implements Id, Username, Email, Password, Roles {
+        public static class FullProfile implements Id, Username, Email, Roles {
 
             Long id;
 
@@ -80,9 +80,15 @@ public enum UserDTO {
 
             String email;
 
-            String password;
-
             Set<Role> roles;
+        }
+
+        @Value
+        public static class ShortProfile implements Id, Username {
+
+            Long id;
+
+            String username;
         }
 
         @Value
