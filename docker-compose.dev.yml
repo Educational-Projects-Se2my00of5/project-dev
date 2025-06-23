@@ -1,0 +1,13 @@
+# docker-compose -f docker-compose.dev.yml up
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: my-project-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379" # Опционально, для отладки
+    volumes:
+      - redis_data_dev:/data
+
+volumes:
+  redis_data_dev:

@@ -1,4 +1,4 @@
-package com.example.backend.config;
+package com.example.backend.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

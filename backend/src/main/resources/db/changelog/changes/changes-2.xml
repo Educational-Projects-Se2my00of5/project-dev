@@ -6,5 +6,35 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <!-- Здесь будут изменения -->
+    <changeSet id="20250623-insert-admin-user" author="Se2my00of5" >
 
+        <!-- Шаг 1: Вставляем самого пользователя в таблицу 'users' -->
+        <insert tableName="users">
+            <column name="id" value="2"/> <!-- Задаем ID вручную для простоты -->
+            <column name="username" value="admin"/>
+            <column name="password" value="$2a$10$GjwF95drmULLzYjTAZyMOusjVwXC3pUfi8O0/xbnEe41aDiiwdWWC"/>
+            <column name="email" value="admin@example.com"/>
+        </insert>
+
+        <!-- Шаг 2: Связываем пользователя с его ролями в таблице 'user_roles' -->
+        <insert tableName="user_roles">
+            <column name="user_id" value="2"/>
+            <column name="role_id" value="1"/> <!-- ROLE_USER -->
+        </insert>
+
+        <insert tableName="user_roles">
+            <column name="user_id" value="2"/>
+            <column name="role_id" value="2"/> <!-- ROLE_ADMIN -->
+        </insert>
+
+        <!--
+            Обновляем последовательность (sequence) для генерации ID,
+            так как мы вставили ID вручную. Это важно для PostgreSQL.
+            Замените 'users_seq' на имя вашей последовательности.
+        -->
+        <sql>
+            SELECT setval('users_seq', (SELECT max(id) FROM users));
+        </sql>
+
+    </changeSet>
 </databaseChangeLog>

@@ -1,17 +1,53 @@
 package com.example.backend.controller;
 
 
+import com.example.backend.dto.UserDTO;
+import com.example.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 public class AuthController {
 
-    
+    private final AuthService authService;
 
+    @PostMapping("auth/login")
+    @Operation(summary = "Логин")
+    public ResponseEntity<UserDTO.Response.TokenAndShortUserInfo> login(
+            @Valid @RequestBody UserDTO.Request.Login authRequest
+    ) {
+        return ResponseEntity.ok(authService.login(authRequest));
+    }
 
+    @PostMapping("auth/register")
+    @Operation(summary = "Регистрация")
+    public ResponseEntity<UserDTO.Response.TokenAndShortUserInfo> register(
+            @Valid @RequestBody UserDTO.Request.Register authRequest
+    ) {
+        return ResponseEntity.ok(authService.registration(authRequest));
+    }
+
+    @PostMapping("auth/new-token-pair")
+    @Operation(summary = "Получение новой пары токенов с помощью refresh токена")
+    public ResponseEntity<UserDTO.Response.PairTokens> getNewTokenPair(@Valid @RequestBody UserDTO.Request.RefreshToken token) {
+        return ResponseEntity.ok(authService.getNewTokenPair(token));
+    }
+
+    @PostMapping("auth/logout")
+    @Operation(summary = "Выход из аккаунта", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<UserDTO.Response.GetMessage> logout(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
+            @Valid @RequestBody UserDTO.Request.RefreshToken token
+    ) {
+        return ResponseEntity.ok(authService.logout(authHeader, token));
+    }
 
 
     @Operation(

@@ -1,8 +1,14 @@
 package com.example.backend.config;
 
+import com.example.backend.dto.SimpleErrorResponseDTO;
+import com.example.backend.filter.JwtAuthFilter;
+import com.example.backend.filter.LoggingFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,7 +24,9 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class SecurityConfig {
 
     private final LoggingFilter loggingFilter;
+    private final JwtAuthFilter jwtAuthFilter;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -33,25 +41,51 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exceptions -> exceptions
+
+                        // обработчик на .authenticated эндпоинты
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding("UTF-8");
+                            String errorJson = String.format(
+                                    "{\"status\": %d, \"message\": \"%s\"}",
+                                    HttpStatus.UNAUTHORIZED.value(),
+                                    "Authentication required. Please provide a valid token."
+                            );
+                            response.getWriter().write(errorJson);
+                        })
+
+                        // обработчик на .hasRole эндпоинты
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding("UTF-8");
+                            String errorJson = String.format(
+                                    "{\"status\": %d, \"message\": \"%s\"}",
+                                    HttpStatus.FORBIDDEN.value(),
+                                    "Access Denied. You do not have the required permissions."
+                            );
+                            response.getWriter().write(errorJson);
+                        })
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/login/**",
-                                "/oauth2/**",
-                                "/register",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
+                        // сваггер
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // поинты аутентификации
+                        .requestMatchers("/auth/logout").authenticated()
+                        .requestMatchers("/auth/**", "/oauth2/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> {
-                    oauth2.successHandler(oAuth2LoginSuccessHandler); // <-- Вот здесь вся магия!
+                    oauth2.successHandler(oAuth2LoginSuccessHandler);
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(loggingFilter, BasicAuthenticationFilter.class);
-        // Добавьте сюда ваш JWT фильтр, как и раньше
-        // .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(loggingFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class);
 
         return http.build();
     }

@@ -1,16 +1,14 @@
 package com.example.backend.service;
 
 import com.example.backend.exception.AuthenticationException;
-import com.example.backend.model.RefreshToken;
 import com.example.backend.model.User;
-import com.example.backend.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
@@ -18,38 +16,38 @@ import java.time.Instant;
 import java.util.Date;
 
 
-@Component
+@Service
 public class JwtProvider {
-    private final RefreshTokenRepository refreshTokenRepository;
 
-    protected final SecretKey jwtAccessSecret;
-    protected final SecretKey jwtRefreshSecret;
-    protected final long jwtAccessExpiration;
-    protected final long jwtRefreshExpiration;
+    private final SecretKey jwtAccessSecret;
+    private final SecretKey jwtRefreshSecret;
+    @Getter
+    private final long jwtAccessExpiration;
+    @Getter
+    private final long jwtRefreshExpiration;
 
 
     public JwtProvider(
             @Value("${jwt.secret.access}") String jwtAccessSecret,
             @Value("${jwt.secret.refresh}") String jwtRefreshSecret,
             @Value("${jwt.expiration.access}") long jwtAccessExpiration,
-            @Value("${jwt.expiration.refresh}") long jwtRefreshExpiration,
-            RefreshTokenRepository refreshTokenRepository) {
+            @Value("${jwt.expiration.refresh}") long jwtRefreshExpiration
+    ) {
         this.jwtAccessSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtAccessSecret));
         this.jwtRefreshSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtRefreshSecret));
         this.jwtAccessExpiration = jwtAccessExpiration;
         this.jwtRefreshExpiration = jwtRefreshExpiration;
-        this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public boolean validateAccessToken(@NonNull String accessToken) {
+    public boolean validateAccessToken(String accessToken) {
         return validateToken(accessToken, jwtAccessSecret);
     }
 
-    public boolean validateRefreshToken(@NonNull String refreshToken) {
+    public boolean validateRefreshToken(String refreshToken) {
         return validateToken(refreshToken, jwtRefreshSecret);
     }
 
-    private boolean validateToken(@NonNull String token, @NonNull Key secret) {
+    private boolean validateToken(String token, Key secret) {
         try {
             Jwts.parser()
                     .setSigningKey(secret)
@@ -74,15 +72,15 @@ public class JwtProvider {
         }
     }
 
-    public Claims getAccessClaims(@NonNull String token) {
+    public Claims getAccessClaims(String token) {
         return getClaims(token, jwtAccessSecret);
     }
 
-    public Claims getRefreshClaims(@NonNull String token) {
+    public Claims getRefreshClaims(String token) {
         return getClaims(token, jwtRefreshSecret);
     }
 
-    private Claims getClaims(@NonNull String token, @NonNull Key secret) {
+    private Claims getClaims(String token, Key secret) {
         return Jwts.parser()
                 .setSigningKey(secret)
                 .build()
@@ -90,12 +88,14 @@ public class JwtProvider {
                 .getBody();
     }
 
-    public String getEmailFromAuthHeader(@NonNull String authHeader) {
+    public String getEmailFromAuthHeader(String authHeader) {
         Claims claims = getAccessClaims(getTokenFromAuthHeader(authHeader));
         return claims.getSubject();
     }
 
-    public String getTokenFromAuthHeader(@NonNull String authHeader) {
+    public String getTokenFromAuthHeader(String authHeader) {
+        if (authHeader == null || authHeader.isEmpty())
+            throw new AuthenticationException("Not contain Authorization header");
         String token = null;
         if (authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
@@ -103,28 +103,27 @@ public class JwtProvider {
         return token;
     }
 
-    public String generateAccessToken(@NonNull User user) {
+    public String generateAccessToken(User user) {
         final Instant accessExpirationInstant = Instant.now().plusSeconds(jwtAccessExpiration);
         final Date accessExpiration = Date.from(accessExpirationInstant);
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .setExpiration(accessExpiration)
                 .signWith(jwtAccessSecret)
+                .claim("userId", user.getId().toString())
                 .claim("username", user.getUsername())
                 .claim("roles", user.getRoles())
                 .compact();
     }
 
-    public String generateRefreshToken(@NonNull User user) {
+    public String generateRefreshToken(User user) {
         final Instant refreshExpirationInstant = Instant.now().plusSeconds(jwtRefreshExpiration);
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
-        final String token = Jwts.builder()
+
+        return Jwts.builder()
                 .setSubject(user.getEmail())
                 .setExpiration(refreshExpiration)
                 .signWith(jwtRefreshSecret)
                 .compact();
-        refreshTokenRepository.save(new RefreshToken(token));
-        return token;
     }
-
 }
