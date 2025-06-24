@@ -4,7 +4,9 @@ import com.example.backend.dto.UserDTO;
 import com.example.backend.exception.BadRequestException;
 import com.example.backend.exception.NotFoundException;
 import com.example.backend.mapper.UserMapper;
+import com.example.backend.model.Role;
 import com.example.backend.model.User;
+import com.example.backend.repository.RoleRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final JwtProvider jwtProvider;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -86,5 +89,44 @@ public class UserService {
         Page<User> userPage = userRepository.findAll(spec, pageable);
 
         return userPage.map(userMapper::toShortProfileDTO);
+    }
+
+    public UserDTO.Response.FullProfile getFullUser(Long id) {
+        final User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        return userMapper.toFullProfileDTO(user);
+    }
+
+    public UserDTO.Response.FullProfile editUser(Long id, UserDTO.Request.EditUser editUser) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        if(editUser.getUsername() != null) {
+            user.setUsername(editUser.getUsername());
+        }
+        if(editUser.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(editUser.getPassword()));
+        }
+
+        user = userRepository.save(user);
+
+        return userMapper.toFullProfileDTO(user);
+    }
+
+    public UserDTO.Response.FullProfile giveAdmin(Long id) {
+        final User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        final Role role = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
+
+        if (!user.getRoles().contains(role)) {
+            user.getRoles().add(role);
+
+            userRepository.save(user);
+
+            return userMapper.toFullProfileDTO(user);
+        }
+        throw new BadRequestException("Пользователь уже имеет роль админа");
     }
 }

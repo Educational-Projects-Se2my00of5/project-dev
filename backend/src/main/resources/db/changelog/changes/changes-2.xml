@@ -35,6 +35,7 @@
         <sql>
             SELECT setval('users_seq', (SELECT max(id) FROM users));
         </sql>
-
     </changeSet>
+
+
 </databaseChangeLog>
