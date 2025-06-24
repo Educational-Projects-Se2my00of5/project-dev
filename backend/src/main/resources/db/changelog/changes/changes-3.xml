@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Здесь будут изменения -->
+
+
+    <changeSet id="1750758635374-15" author="Se2my00of5">
+        <dropForeignKeyConstraint baseTableName="comments" constraintName="FK_COMMENTS_ON_USER-ID"/>
+    </changeSet>
+    <changeSet id="1750758635374-16" author="Se2my00of5">
+        <dropForeignKeyConstraint baseTableName="posts" constraintName="fk_posts_on_category"/>
+    </changeSet>
+    <changeSet id="1750758635374-3" author="Se2my00of5">
+        <createTable tableName="post_categories">
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_post_categories"/>
+            </column>
+            <column name="post_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_post_categories"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1750758635374-4" author="Se2my00of5">
+        <addColumn tableName="posts">
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="user_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1750758635374-6" author="Se2my00of5">
+        <addColumn tableName="comments">
+            <column name="user_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1750758635374-7" author="Se2my00of5">
+        <addNotNullConstraint columnName="user_id" tableName="comments"/>
+    </changeSet>
+    <changeSet id="1750758635374-9" author="Se2my00of5">
+        <addNotNullConstraint columnName="user_id" tableName="posts"/>
+    </changeSet>
+    <changeSet id="1750758635374-10" author="Se2my00of5">
+        <addUniqueConstraint columnNames="name" constraintName="uc_categories_name" tableName="categories"/>
+    </changeSet>
+    <changeSet id="1750758635374-11" author="Se2my00of5">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="comments" constraintName="FK_COMMENTS_ON_USER"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1750758635374-12" author="Se2my00of5">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="posts" constraintName="FK_POSTS_ON_USER"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1750758635374-13" author="Se2my00of5">
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="post_categories"
+                                 constraintName="fk_poscat_on_category" referencedColumnNames="id"
+                                 referencedTableName="categories"/>
+    </changeSet>
+    <changeSet id="1750758635374-14" author="Se2my00of5">
+        <addForeignKeyConstraint baseColumnNames="post_id" baseTableName="post_categories"
+                                 constraintName="fk_poscat_on_post" referencedColumnNames="id"
+                                 referencedTableName="posts"/>
+    </changeSet>
+    <changeSet id="1750758635374-17" author="Se2my00of5">
+        <dropColumn columnName="category_id" tableName="posts"/>
+    </changeSet>
+    <changeSet id="1750758635374-18" author="Se2my00of5">
+        <dropColumn columnName="user-id" tableName="comments"/>
+    </changeSet>
+    <changeSet id="1750758635374-1" author="Se2my00of5">
+        <modifyDataType columnName="content" newDataType="VARCHAR(2000)" tableName="posts"/>
+    </changeSet>
+    <changeSet id="1750758635374-2" author="Se2my00of5">
+        <addNotNullConstraint columnDataType="VARCHAR(255)" columnName="name" tableName="categories" validate="true"/>
+    </changeSet>
+    <changeSet id="1750760049819-1" author="Se2my00of5">
+        <addColumn tableName="posts">
+            <column name="likes" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1750760049819-2" author="Se2my00of5">
+        <addNotNullConstraint columnName="likes" tableName="posts"/>
+    </changeSet>
+    <changeSet id="1750766182041-1" author="Se2my00of5">
+        <createSequence incrementBy="50" sequenceName="post_likes_seq" startValue="1"/>
+    </changeSet>
+    <changeSet id="1750766182041-2" author="Se2my00of5">
+        <createTable tableName="post_likes">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_post_likes"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="post_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1750766182041-3" author="Se2my00of5">
+        <addUniqueConstraint columnNames="user_id, post_id" constraintName="uc_5b638c172ef9156d8b72e8b6b"
+                             tableName="post_likes"/>
+    </changeSet>
+    <changeSet id="1750766182041-4" author="Se2my00of5">
+        <addForeignKeyConstraint baseColumnNames="post_id" baseTableName="post_likes"
+                                 constraintName="FK_POST_LIKES_ON_POST" referencedColumnNames="id"
+                                 referencedTableName="posts"/>
+    </changeSet>
+    <changeSet id="1750766182041-5" author="Se2my00of5">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="post_likes"
+                                 constraintName="FK_POST_LIKES_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1750766182041-6" author="Se2my00of5">
+        <dropColumn columnName="likes" tableName="posts"/>
+    </changeSet>
+
+</databaseChangeLog>

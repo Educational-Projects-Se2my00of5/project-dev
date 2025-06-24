@@ -18,9 +18,9 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private String name;
-    private String description;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Post> posts;
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    private String description;
 }

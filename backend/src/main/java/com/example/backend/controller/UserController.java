@@ -64,7 +64,7 @@ public class UserController {
 
     @GetMapping("admin/users/{id}")
     @Operation(summary = "Получение профиля по ID", tags = {ADMIN_TITLE}, security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<UserDTO.Response.FullProfile> getAnyUser(@PathVariable Long id) {
+    public ResponseEntity<UserDTO.Response.FullProfile> getFullUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getFullUser(id));
     }
 

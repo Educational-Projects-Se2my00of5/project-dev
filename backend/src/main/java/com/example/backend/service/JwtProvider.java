@@ -93,6 +93,11 @@ public class JwtProvider {
         return claims.getSubject();
     }
 
+    public Long getUserIdFromAuthHeader(String authHeader) {
+        Claims claims = getAccessClaims(getTokenFromAuthHeader(authHeader));
+        return (Long) claims.get("userId");
+    }
+
     public String getTokenFromAuthHeader(String authHeader) {
         if (authHeader == null || authHeader.isEmpty())
             throw new AuthenticationException("Not contain Authorization header");
