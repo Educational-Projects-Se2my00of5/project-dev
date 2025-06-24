@@ -6,7 +6,11 @@ import com.example.backend.exception.NotFoundException;
 import com.example.backend.mapper.UserMapper;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -73,5 +77,14 @@ public class UserService {
 
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+    }
+
+    public Page<UserDTO.Response.ShortProfile> getUsers(String usernameFilter, Pageable pageable) {
+
+        Specification<User> spec = UserSpecification.usernameContains(usernameFilter);
+
+        Page<User> userPage = userRepository.findAll(spec, pageable);
+
+        return userPage.map(userMapper::toShortProfileDTO);
     }
 }

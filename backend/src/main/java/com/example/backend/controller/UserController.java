@@ -7,10 +7,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("user")
@@ -20,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/profile")
-    @Operation(summary = "Получение своего профиля", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Получение профиля", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<UserDTO.Response.FullProfile> getMyProfile(@Parameter(hidden = true) @RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.ok(userService.getMyProfile(authHeader));
     }
@@ -29,8 +30,7 @@ public class UserController {
     @Operation(summary = "Редактирование профиля", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<UserDTO.Response.FullProfile> updateProfile(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody UserDTO.Request.EditProfile userData)
-    {
+            @Valid @RequestBody UserDTO.Request.EditProfile userData) {
         return ResponseEntity.ok(userService.updateProfile(authHeader, userData));
     }
 
@@ -38,21 +38,26 @@ public class UserController {
     @Operation(summary = "Редактирование пароля", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<UserDTO.Response.GetMessage> updatePassword(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody UserDTO.Request.EditPassword editPassword)
-    {
+            @Valid @RequestBody UserDTO.Request.EditPassword editPassword) {
         return ResponseEntity.ok(userService.updatePassword(authHeader, editPassword));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserDTO.Response.ShortProfile>> getUsers() {
-        return ResponseEntity.ok(userService.getUsers());
+    @Operation(summary = "Получить список всех пользователей с пагинацией и фильтрацией")
+    public ResponseEntity<Page<UserDTO.Response.ShortProfile>> getUsers(
+            @Parameter(description = "Часть имени пользователя для поиска (нечувствительно к регистру)")
+            @RequestParam(required = false) String usernameFilter,
+            @ParameterObject Pageable pageable
+
+    ) {
+        return ResponseEntity.ok(userService.getUsers(usernameFilter, pageable));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Получить пользователя по ID")
     public ResponseEntity<UserDTO.Response.ShortProfile> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
-
 
 
 }
