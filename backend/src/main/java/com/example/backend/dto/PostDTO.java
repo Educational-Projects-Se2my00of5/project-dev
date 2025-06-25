@@ -1,7 +1,5 @@
 package com.example.backend.dto;
 
-import com.example.backend.model.Category;
-import com.example.backend.model.Comment;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,7 +49,8 @@ public enum PostDTO {
         ;
 
         @Data
-        public static class FullInfo implements Id, ShortUserInfo, Title, Content, Likes, HasLiked, CreateAt, UpdateAt, Categories, Comments {
+        public static class FullInfoPost implements Id, ShortUserInfo, Title, Content, Likes,
+                HasLiked, CreateAt, UpdateAt, Categories, RootComments {
 
             @NotNull
             Long id;
@@ -78,14 +77,14 @@ public enum PostDTO {
             LocalDateTime updatedAt;
 
             @NotNull
-            Set<Category> categories;
+            Set<CategoryDTO.Response.ShortInfoCategory> categories;
 
             @NotNull
-            Set<Comment> comments;
+            Set<CommentDTO.Response.InfoComment> rootComments;
         }
 
         @Data
-        public static class ShortInfo implements Id, ShortUserInfo, Title, Likes, HasLiked, CreateAt, Categories {
+        public static class ShortInfoPost implements Id, ShortUserInfo, Title, Likes, HasLiked, CreateAt, Categories {
 
             @NotNull
             Long id;
@@ -106,7 +105,7 @@ public enum PostDTO {
             LocalDateTime createdAt;
 
             @NotNull
-            Set<Category> categories;
+            Set<CategoryDTO.Response.ShortInfoCategory> categories;
         }
 
         @Value
@@ -122,7 +121,7 @@ public enum PostDTO {
     }
 
     private interface ShortUserInfo {
-        @Schema(description = "Id пользователя", example = "1")
+        @Schema(description = "Id пользователя")
         UserDTO.Response.ShortProfile getShortUserInfo();
     }
 
@@ -156,9 +155,9 @@ public enum PostDTO {
         LocalDateTime getUpdatedAt();
     }
 
-    private interface Comments {
+    private interface RootComments {
         @Schema(description = "Комментарии")
-        Set<Comment> getComments();
+        Set<CommentDTO.Response.InfoComment> getRootComments();
     }
 
     private interface CategoriesId {
@@ -168,7 +167,7 @@ public enum PostDTO {
 
     private interface Categories {
         @Schema(description = "Категории в которые входит пост")
-        Set<Category> getCategories();
+        Set<CategoryDTO.Response.ShortInfoCategory> getCategories();
     }
 
     private interface Message {

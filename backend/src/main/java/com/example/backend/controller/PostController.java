@@ -30,8 +30,8 @@ public class PostController {
 
     @Operation(summary = "Получить список всех постов с пагинацией и фильтрацией", tags = {GUEST_TITLE})
     @GetMapping("posts")
-    public ResponseEntity<Page<PostDTO.Response.ShortInfo>> getPosts(
-            @RequestHeader(name = "Authorization", required = false) String authHeader,
+    public ResponseEntity<Page<PostDTO.Response.ShortInfoPost>> getPosts(
+            @Parameter(hidden = true) @RequestHeader(name = "Authorization", required = false) String authHeader,
             @Parameter(description = "Фильтрация по пользователю (id)")
             @RequestParam(required = false) Long userFilter,
             @Parameter(description = "Часть названия поста для поиска (нечувствительно к регистру)")
@@ -45,8 +45,8 @@ public class PostController {
 
     @Operation(summary = "Получить пост по Id", tags = {GUEST_TITLE})
     @GetMapping("posts/{id}")
-    public ResponseEntity<PostDTO.Response.FullInfo> getPostById(
-            @RequestHeader(name = "Authorization", required = false) String authHeader,
+    public ResponseEntity<PostDTO.Response.FullInfoPost> getPostById(
+            @Parameter(hidden = true) @RequestHeader(name = "Authorization", required = false) String authHeader,
             @PathVariable Long id
     ) {
         return ResponseEntity.ok(postService.getPostById(authHeader, id));
@@ -58,7 +58,7 @@ public class PostController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("posts")
-    public ResponseEntity<PostDTO.Response.FullInfo> createPost(
+    public ResponseEntity<PostDTO.Response.FullInfoPost> createPost(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody PostDTO.Request.CreatePost post
     ) {
@@ -70,7 +70,7 @@ public class PostController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("posts/{id}")
-    public ResponseEntity<PostDTO.Response.FullInfo> updatePost(
+    public ResponseEntity<PostDTO.Response.FullInfoPost> updatePost(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
             @PathVariable Long id,
             @Valid @RequestBody PostDTO.Request.EditPost editPost
@@ -97,7 +97,7 @@ public class PostController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("posts/{id}/like")
-    public ResponseEntity<PostDTO.Response.FullInfo> likePost(
+    public ResponseEntity<PostDTO.Response.FullInfoPost> likePost(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
             @PathVariable Long id
     ) {
@@ -110,7 +110,7 @@ public class PostController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("admin/posts/{id}")
-    public ResponseEntity<PostDTO.Response.FullInfo> updatePostAdmin(
+    public ResponseEntity<PostDTO.Response.FullInfoPost> updatePostAdmin(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
             @PathVariable Long id,
             @Valid @RequestBody PostDTO.Request.EditPost editPost

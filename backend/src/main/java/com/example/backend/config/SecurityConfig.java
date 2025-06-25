@@ -82,11 +82,11 @@ public class SecurityConfig {
                                 "/api/new-token-pair", "/oauth2/**"
                         ).permitAll()
                         // поинты user
-                        .requestMatchers("api/admin/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/me/**").authenticated()
                         .requestMatchers("/api/users/**").permitAll()
                         // поинты post
-                        .requestMatchers("api/admin/posts/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/posts/**").hasRole("ADMIN")
                         .requestMatchers("/api/posts/{id}/like").authenticated()
                         .requestMatchers(HttpMethod.GET,"/api/posts/**").permitAll()
                         .requestMatchers("/api/posts/**").authenticated()
