@@ -1,6 +1,5 @@
 package com.example.backend.filter;
 
-import com.example.backend.exception.AuthenticationException;
 import com.example.backend.exception.NotFoundException;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.JwtProvider;
@@ -27,18 +26,15 @@ import java.util.List;
 @Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
-    private final RedisProvider redisProvider;
-    private final UserRepository userRepository;
-
-
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
-
     private static final List<String> PERMITTED_PATHS = List.of(
             "/auth/login", "/auth/register", "/oauth2", "/auth/new-token-pair",
             "/swagger-ui", "/v3/api-docs"
     );
+    private final JwtProvider jwtProvider;
+    private final RedisProvider redisProvider;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(

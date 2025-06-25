@@ -105,11 +105,6 @@ public enum UserDTO {
         }
 
         @Value
-        public static class GetMessage implements Message {
-            String message;
-        }
-
-        @Value
         public static class PairTokens implements AccessToken, RefreshToken {
             String accessToken;
             String refreshToken;
@@ -158,11 +153,5 @@ public enum UserDTO {
     private interface RefreshToken {
         @Schema(description = "Refresh токен", example = "eyJhbGciOiJIUzI1NiIsInR...")
         String getRefreshToken();
-    }
-
-    private interface Message {
-
-        @Schema(description = "Сообщение", example = "Операция выполнена успешно")
-        String getMessage();
     }
 }

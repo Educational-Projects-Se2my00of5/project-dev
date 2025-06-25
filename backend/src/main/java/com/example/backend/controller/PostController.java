@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.MessageDTO;
 import com.example.backend.dto.PostDTO;
 import com.example.backend.model.Category;
 import com.example.backend.service.PostService;
@@ -84,7 +85,7 @@ public class PostController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("posts/{id}")
-    public ResponseEntity<PostDTO.Response.GetMessage> deletePost(
+    public ResponseEntity<MessageDTO.Response.GetMessage> deletePost(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
             @PathVariable Long id
     ) {
@@ -124,7 +125,7 @@ public class PostController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("admin/posts/{id}")
-    public ResponseEntity<PostDTO.Response.GetMessage> deletePost(@PathVariable Long id) {
+    public ResponseEntity<MessageDTO.Response.GetMessage> deletePost(@PathVariable Long id) {
         return ResponseEntity.ok(postService.deletePost(id));
     }
 

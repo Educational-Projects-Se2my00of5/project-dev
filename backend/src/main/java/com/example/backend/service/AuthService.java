@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 
+import com.example.backend.dto.MessageDTO;
 import com.example.backend.dto.UserDTO;
 import com.example.backend.exception.AuthenticationException;
 import com.example.backend.exception.BadRequestException;
@@ -12,7 +13,6 @@ import com.example.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +100,7 @@ public class AuthService {
         throw new BadRequestException("invalid refresh token");
     }
 
-    public UserDTO.Response.GetMessage logout(String authHeader, UserDTO.Request.RefreshToken token) {
+    public MessageDTO.Response.GetMessage logout(String authHeader, UserDTO.Request.RefreshToken token) {
         String refreshToken = token.getRefreshToken();
         String accessToken = jwtProvider.getTokenFromAuthHeader(authHeader);
 
@@ -108,7 +108,7 @@ public class AuthService {
             redisProvider.deleteToken(refreshToken);
             redisProvider.addToken(accessToken, "not-valid", jwtProvider.getJwtAccessExpiration());
 
-            return new UserDTO.Response.GetMessage("success");
+            return new MessageDTO.Response.GetMessage("success");
         } else {
             throw new BadRequestException("invalid refresh token");
         }

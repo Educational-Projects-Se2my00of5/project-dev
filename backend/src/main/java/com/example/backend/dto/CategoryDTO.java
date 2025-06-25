@@ -20,6 +20,7 @@ public enum CategoryDTO {
             String description;
         }
     }
+
     public enum Response {
         ;
 

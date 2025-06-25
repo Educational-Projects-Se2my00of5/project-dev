@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.MessageDTO;
 import com.example.backend.dto.UserDTO;
 import com.example.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +40,7 @@ public class UserController {
 
     @PutMapping("/me/password")
     @Operation(summary = "Редактирование пароля", tags = {USER_TITLE}, security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<UserDTO.Response.GetMessage> updatePassword(
+    public ResponseEntity<MessageDTO.Response.GetMessage> updatePassword(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody UserDTO.Request.EditPassword editPassword) {
         return ResponseEntity.ok(userService.updatePassword(authHeader, editPassword));

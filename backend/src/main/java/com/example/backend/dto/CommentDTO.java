@@ -22,6 +22,12 @@ public enum CommentDTO {
 
             Long parentCommentId;
         }
+
+        @Value
+        public static class UpdateComment implements Body {
+            @NotBlank(message = "Текст комментария не может быть пустым")
+            String body;
+        }
     }
 
     public enum Response {

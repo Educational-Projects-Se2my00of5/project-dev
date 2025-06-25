@@ -107,11 +107,6 @@ public enum PostDTO {
             @NotNull
             Set<CategoryDTO.Response.ShortInfoCategory> categories;
         }
-
-        @Value
-        public static class GetMessage implements Message {
-            String message;
-        }
     }
 
     private interface Id {
@@ -140,6 +135,7 @@ public enum PostDTO {
         @Schema(description = "Кол-во лайков", example = "1223")
         Long getLikes();
     }
+
     private interface HasLiked {
         @Schema(description = "Лайкнут ли пост конкретным юзером")
         Boolean getHasLiked();
@@ -168,10 +164,5 @@ public enum PostDTO {
     private interface Categories {
         @Schema(description = "Категории в которые входит пост")
         Set<CategoryDTO.Response.ShortInfoCategory> getCategories();
-    }
-
-    private interface Message {
-        @Schema(description = "Сообщение", example = "Операция выполнена успешно")
-        String getMessage();
     }
 }

@@ -1,12 +1,14 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.CommentDTO;
+import com.example.backend.dto.MessageDTO;
 import com.example.backend.dto.PostDTO;
 import com.example.backend.exception.ForbiddenException;
-import com.example.backend.exception.NotFoundException;
 import com.example.backend.mapper.PostMapper;
 import com.example.backend.model.*;
-import com.example.backend.repository.*;
+import com.example.backend.repository.CategoryRepository;
+import com.example.backend.repository.CommentRepository;
+import com.example.backend.repository.PostLikeRepository;
+import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.specification.PostSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,11 +23,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.example.backend.util.GetModelOrThrow.getPostOrThrow;
+import static com.example.backend.util.GetModelOrThrow.getUserOrThrow;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
 
-    private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final CategoryRepository categoryRepository;
@@ -68,8 +72,7 @@ public class PostService {
 
     public PostDTO.Response.FullInfoPost createPost(String authHeader, PostDTO.Request.CreatePost post) {
         Long userId = jwtProvider.getUserIdFromAuthHeader(authHeader);
-        User author = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        User author = getUserOrThrow(userId);
 
         Set<Category> categories = categoryRepository.findByIdIn(post.getCategoriesId());
 
@@ -103,10 +106,10 @@ public class PostService {
         return postMapper.toFullInfoDTO(post, rootComments, userId);
     }
 
-    public PostDTO.Response.GetMessage deletePost(Long id) {
+    public MessageDTO.Response.GetMessage deletePost(Long id) {
         Post post = getPostOrThrow(id);
         postRepository.delete(post);
-        return new PostDTO.Response.GetMessage("success delete post");
+        return new MessageDTO.Response.GetMessage("success delete post");
     }
 
     public PostDTO.Response.FullInfoPost updatePost(String authHeader, Long id, PostDTO.Request.EditPost editPost) {
@@ -119,7 +122,7 @@ public class PostService {
         throw new ForbiddenException("У вас нет прав на редактирование этого поста");
     }
 
-    public PostDTO.Response.GetMessage deletePost(String authHeader, Long id) {
+    public MessageDTO.Response.GetMessage deletePost(String authHeader, Long id) {
         String authorId = getPostOrThrow(id).getAuthor().getId().toString();
         String userId = (String) jwtProvider.getUserIdFromAuthHeader(authHeader).toString();
 
@@ -134,11 +137,8 @@ public class PostService {
     public PostDTO.Response.FullInfoPost likePost(String authHeader, Long postId) {
         Long currentUserId = jwtProvider.getUserIdFromAuthHeader(authHeader);
 
-        User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("Пост не найден"));
+        User currentUser = getUserOrThrow(currentUserId);
+        Post post = getPostOrThrow(postId);
 
         Optional<PostLike> existingLike = postLikeRepository.findByUserAndPost(currentUser, post);
 
@@ -161,8 +161,4 @@ public class PostService {
         return postMapper.toFullInfoDTO(post, rootComments, currentUserId);
     }
 
-    private Post getPostOrThrow(Long id) {
-        return postRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пост не найден"));
-    }
 }

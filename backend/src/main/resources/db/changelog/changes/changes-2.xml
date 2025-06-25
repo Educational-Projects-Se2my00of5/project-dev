@@ -6,7 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <!-- Здесь будут изменения -->
-    <changeSet id="20250623-insert-admin-user" author="Se2my00of5" >
+    <changeSet id="20250623-insert-admin-user" author="Se2my00of5">
 
         <!-- Шаг 1: Вставляем самого пользователя в таблицу 'users' -->
         <insert tableName="users">

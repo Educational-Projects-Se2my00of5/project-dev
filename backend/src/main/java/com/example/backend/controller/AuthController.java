@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 
+import com.example.backend.dto.MessageDTO;
 import com.example.backend.dto.UserDTO;
 import com.example.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,7 +46,7 @@ public class AuthController {
 
     @PostMapping("logout")
     @Operation(summary = "Выход из аккаунта", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<UserDTO.Response.GetMessage> logout(
+    public ResponseEntity<MessageDTO.Response.GetMessage> logout(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody UserDTO.Request.RefreshToken token
     ) {
@@ -66,5 +67,6 @@ public class AuthController {
             description = "Found - Происходит редирект на страницу входа Google."
     )
     @GetMapping("/oauth2/authorization/google")
-    public void googleAuthRedirect() {}
+    public void googleAuthRedirect() {
+    }
 }

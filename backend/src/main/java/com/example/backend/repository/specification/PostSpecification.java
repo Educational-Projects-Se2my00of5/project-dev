@@ -15,9 +15,6 @@ import java.util.Set;
 
 public class PostSpecification {
 
-    /**
-     * Создает объединенную спецификацию на основе всех фильтров.
-     */
     public static Specification<Post> byFilters(Long userId, String title, Set<Category> categories) {
         return (root, query, criteriaBuilder) -> {
             // Создаем список предикатов (условий WHERE)

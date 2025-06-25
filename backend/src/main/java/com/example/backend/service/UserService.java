@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.MessageDTO;
 import com.example.backend.dto.UserDTO;
 import com.example.backend.exception.BadRequestException;
 import com.example.backend.exception.NotFoundException;
@@ -17,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.example.backend.util.GetModelOrThrow.getUserOrThrow;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +50,7 @@ public class UserService {
         return userMapper.toFullProfileDTO(user);
     }
 
-    public UserDTO.Response.GetMessage updatePassword(String authHeader, UserDTO.Request.EditPassword editPassword) {
+    public MessageDTO.Response.GetMessage updatePassword(String authHeader, UserDTO.Request.EditPassword editPassword) {
 
         User user = getUserFromAuthHeader(authHeader);
 
@@ -56,7 +59,7 @@ public class UserService {
 
             user.setPassword(newPassword);
             userRepository.save(user);
-            return new UserDTO.Response.GetMessage("success edit password");
+            return new MessageDTO.Response.GetMessage("success edit password");
         }
         throw new BadRequestException("old password does not right");
     }
@@ -68,8 +71,7 @@ public class UserService {
     }
 
     public UserDTO.Response.ShortProfile getUser(Long id) {
-        final User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        final User user = getUserOrThrow(id);
 
         return userMapper.toShortProfileDTO(user);
     }
@@ -99,13 +101,12 @@ public class UserService {
     }
 
     public UserDTO.Response.FullProfile editUser(Long id, UserDTO.Request.EditUser editUser) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        User user = getUserOrThrow(id);
 
-        if(editUser.getUsername() != null) {
+        if (editUser.getUsername() != null) {
             user.setUsername(editUser.getUsername());
         }
-        if(editUser.getPassword() != null) {
+        if (editUser.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(editUser.getPassword()));
         }
 
@@ -115,8 +116,7 @@ public class UserService {
     }
 
     public UserDTO.Response.FullProfile giveAdmin(Long id) {
-        final User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        final User user = getUserOrThrow(id);
 
         final Role role = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
 
