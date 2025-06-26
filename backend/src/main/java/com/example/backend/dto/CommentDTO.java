@@ -34,7 +34,7 @@ public enum CommentDTO {
         ;
 
         @Value
-        public static class InfoComment implements Id, Body, AuthorInfo, CreateAt {
+        public static class InfoComment implements Id, Body, AuthorInfo, CreateAt, UpdateAt, Deleted {
             Long id;
 
             String body;
@@ -42,6 +42,10 @@ public enum CommentDTO {
             UserDTO.Response.ShortProfile authorInfo;
 
             LocalDateTime createdAt;
+
+            LocalDateTime updatedAt;
+
+            Boolean deleted;
         }
     }
 
@@ -81,5 +85,9 @@ public enum CommentDTO {
 
     private interface ParentCommentId {
         Long getParentCommentId();
+    }
+
+    private interface Deleted {
+        Boolean getDeleted();
     }
 }

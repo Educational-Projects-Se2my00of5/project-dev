@@ -23,6 +23,14 @@
             <column name="updated_at" type="DATETIME"/>
         </addColumn>
     </changeSet>
+    <changeSet id="1750908233946-1" author="Se2my00of5">
+        <addColumn tableName="comments">
+            <column name="deleted" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1750908233946-2" author="Se2my00of5">
+        <addNotNullConstraint columnName="deleted" tableName="comments"/>
+    </changeSet>
 
 
 </databaseChangeLog>

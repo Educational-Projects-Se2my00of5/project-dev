@@ -79,14 +79,13 @@ public class CommentService {
             throw new ForbiddenException("Вы не можете удалить чужой комментарий.");
         }
 
-        commentRepository.delete(commentToDelete);
-        return new MessageDTO.Response.GetMessage("success delete comment");
+        return deleteComment(commentId);
     }
 
     public MessageDTO.Response.GetMessage deleteComment(Long commentId) {
         Comment commentToDelete = getCommentOrThrow(commentId);
 
-        commentRepository.delete(commentToDelete);
+        commentToDelete.setDeleted(true);
         return new MessageDTO.Response.GetMessage("success delete comment");
     }
 

@@ -4,6 +4,7 @@ import com.example.backend.dto.CommentDTO;
 import com.example.backend.dto.PostDTO;
 import com.example.backend.model.Comment;
 import com.example.backend.model.Post;
+import com.example.backend.model.User;
 import org.mapstruct.*;
 
 import java.util.Set;
@@ -14,33 +15,34 @@ import java.util.Set;
 )
 public interface PostMapper {
 
-
     @Mapping(target = "shortUserInfo", source = "post.author")
     @Mapping(target = "categories", source = "post.categories")
+    // комменты должны замаппиться в CommentMapper, пж
     @Mapping(target = "rootComments", source = "rootComments")
     @Mapping(target = "likes", ignore = true)
     @Mapping(target = "hasLiked", ignore = true)
     PostDTO.Response.FullInfoPost toFullInfoDTO(
             Post post,
             Set<Comment> rootComments,
-            @Context Long currentUserId
+            @Context User currentUser
     );
 
     @Mapping(target = "shortUserInfo", source = "post.author")
     @Mapping(target = "categories", source = "post.categories")
     @Mapping(target = "likes", ignore = true)
     @Mapping(target = "hasLiked", ignore = true)
-    PostDTO.Response.ShortInfoPost toShortInfoDTO(Post post, @Context Long currentUserId);
+    PostDTO.Response.ShortInfoPost toShortInfoDTO(Post post, @Context User currentUser);
 
 
     @AfterMapping
     default void completePostFullInfoDTO(
             Post post,
             @MappingTarget PostDTO.Response.FullInfoPost dto,
-            @Context Long currentUserId,
-            @Context Set<CommentDTO.Response.InfoComment> rootCommentsDto
+            @Context User currentUser
     ) {
         if (post == null) return;
+
+        Long currentUserId = currentUser.getId();
 
         // 1. Вычисляем количество лайков
         long likeCount = post.getLikes().size();
@@ -56,13 +58,13 @@ public interface PostMapper {
         boolean hasLiked = post.getLikes().stream()
                 .anyMatch(like -> like.getUser().getId().equals(currentUserId));
         dto.setHasLiked(hasLiked);
-
-        dto.setRootComments(rootCommentsDto);
     }
 
     @AfterMapping
-    default void completePostShortInfoDTO(Post post, @MappingTarget PostDTO.Response.ShortInfoPost dto, @Context Long currentUserId) {
+    default void completePostShortInfoDTO(Post post, @MappingTarget PostDTO.Response.ShortInfoPost dto, @Context User currentUser) {
         if (post == null) return;
+
+        Long currentUserId = currentUser.getId();
 
         // 1. Вычисляем количество лайков
         long likeCount = post.getLikes().size();

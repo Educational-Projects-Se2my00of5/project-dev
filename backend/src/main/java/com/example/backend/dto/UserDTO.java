@@ -97,11 +97,13 @@ public enum UserDTO {
         }
 
         @Value
-        public static class ShortProfile implements Id, Username {
+        public static class ShortProfile implements Id, Username, Roles {
 
             Long id;
 
             String username;
+
+            Set<Role> roles;
         }
 
         @Value

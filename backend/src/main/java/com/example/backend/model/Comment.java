@@ -47,4 +47,8 @@ public class Comment {
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private Set<Comment> replies = new HashSet<>();
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean deleted = false;
 }
