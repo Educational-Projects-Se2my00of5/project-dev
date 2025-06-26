@@ -64,10 +64,9 @@ public class CommentController {
             @PathVariable Long postId,
             @PathVariable Long commentId,
             @Valid @RequestBody CommentDTO.Request.UpdateComment comment
-    ){
+    ) {
         return ResponseEntity.ok(commentService.updateComment(commentId, comment));
     }
-
 
 
     // Возможно сделаю чтобы комменты не удалялись из бд, а становились невидимы обычным пользователям(и создателю тож)

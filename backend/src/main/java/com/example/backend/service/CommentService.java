@@ -7,6 +7,8 @@ import com.example.backend.exception.BadRequestException;
 import com.example.backend.exception.ForbiddenException;
 import com.example.backend.mapper.CommentMapper;
 import com.example.backend.model.Comment;
+import com.example.backend.model.Post;
+import com.example.backend.model.User;
 import com.example.backend.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -74,12 +76,28 @@ public class CommentService {
         Long currentUserId = jwtProvider.getUserIdFromAuthHeader(authHeader);
         Comment commentToDelete = getCommentOrThrow(commentId);
 
-        // проверка
-        if (!commentToDelete.getUser().getId().equals(currentUserId)) {
-            throw new ForbiddenException("Вы не можете удалить чужой комментарий.");
+        // проверка, что пользователь автор комментария
+        if (commentToDelete.getUser().getId().equals(currentUserId)) {
+            return deleteComment(commentId);
         }
 
-        return deleteComment(commentId);
+        User user = getUserOrThrow(currentUserId);
+        Post post = commentToDelete.getPost();
+
+        // проверка, что пользователь модератор, хотя бы одной категории из поста
+        Set<Long> moderatedCategoryIds = user.getRoles()
+                .stream()
+                .filter(role -> role.getName().startsWith("ROLE_MODERATOR_"))
+                .map(role -> Long.parseLong(role.getName().substring("ROLE_MODERATOR_".length())))
+                .collect(Collectors.toSet());
+
+        if (post.getCategories().stream()
+                .anyMatch(postCategory -> moderatedCategoryIds.contains(postCategory.getId()))
+        ) {
+            return deleteComment(commentId);
+        }
+
+        throw new ForbiddenException("У вас нет прав на удаление этого комментария.");
     }
 
     public MessageDTO.Response.GetMessage deleteComment(Long commentId) {
