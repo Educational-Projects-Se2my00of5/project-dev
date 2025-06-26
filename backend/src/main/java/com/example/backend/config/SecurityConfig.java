@@ -1,12 +1,12 @@
 package com.example.backend.config;
 
-import com.example.backend.dto.SimpleErrorResponseDTO;
 import com.example.backend.filter.JwtAuthFilter;
 import com.example.backend.filter.LoggingFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -75,14 +75,28 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // сваггер
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        // поинты аутентификации
-                        .requestMatchers("/auth/logout").authenticated()
-                        .requestMatchers("/auth/**", "/oauth2/**").permitAll()
+                        // поинты auth
+                        .requestMatchers("/api/logout").authenticated()
+                        .requestMatchers("/api/register", "/api/login",
+                                "/api/new-token-pair", "/oauth2/**"
+                        ).permitAll()
                         // поинты user
-                        .requestMatchers("/user/profile/**").authenticated()
-                        .requestMatchers("/user/**").permitAll()
-                        // поинты доступные админу
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/me/**").authenticated()
+                        .requestMatchers("/api/users/**").permitAll()
+                        // поинты post
+                        .requestMatchers("/api/admin/posts/**").hasRole("ADMIN")
+                        .requestMatchers("/api/posts/{id}/like").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+                        .requestMatchers("/api/posts/**").authenticated()
+                        // поинты category
+                        .requestMatchers("/api/admin/categories/**").hasRole("ADMIN")
+                        .requestMatchers("/api/categories/**").permitAll()
+                        // поинты комментариев
+                        .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}").permitAll()
+                        .requestMatchers("/api/posts/{postId}/comments/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/posts/{postId}/comments/**").authenticated()
+
                         .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> {

@@ -1,10 +1,13 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.MessageDTO;
 import com.example.backend.dto.UserDTO;
 import com.example.backend.exception.BadRequestException;
 import com.example.backend.exception.NotFoundException;
 import com.example.backend.mapper.UserMapper;
+import com.example.backend.model.Role;
 import com.example.backend.model.User;
+import com.example.backend.repository.RoleRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +19,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.example.backend.util.GetModelOrThrow.getUserOrThrow;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final JwtProvider jwtProvider;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -44,7 +50,7 @@ public class UserService {
         return userMapper.toFullProfileDTO(user);
     }
 
-    public UserDTO.Response.GetMessage updatePassword(String authHeader, UserDTO.Request.EditPassword editPassword) {
+    public MessageDTO.Response.GetMessage updatePassword(String authHeader, UserDTO.Request.EditPassword editPassword) {
 
         User user = getUserFromAuthHeader(authHeader);
 
@@ -53,7 +59,7 @@ public class UserService {
 
             user.setPassword(newPassword);
             userRepository.save(user);
-            return new UserDTO.Response.GetMessage("success edit password");
+            return new MessageDTO.Response.GetMessage("success edit password");
         }
         throw new BadRequestException("old password does not right");
     }
@@ -65,8 +71,7 @@ public class UserService {
     }
 
     public UserDTO.Response.ShortProfile getUser(Long id) {
-        final User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        final User user = getUserOrThrow(id);
 
         return userMapper.toShortProfileDTO(user);
     }
@@ -86,5 +91,42 @@ public class UserService {
         Page<User> userPage = userRepository.findAll(spec, pageable);
 
         return userPage.map(userMapper::toShortProfileDTO);
+    }
+
+    public UserDTO.Response.FullProfile getFullUser(Long id) {
+        final User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        return userMapper.toFullProfileDTO(user);
+    }
+
+    public UserDTO.Response.FullProfile editUser(Long id, UserDTO.Request.EditUser editUser) {
+        User user = getUserOrThrow(id);
+
+        if (editUser.getUsername() != null) {
+            user.setUsername(editUser.getUsername());
+        }
+        if (editUser.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(editUser.getPassword()));
+        }
+
+        user = userRepository.save(user);
+
+        return userMapper.toFullProfileDTO(user);
+    }
+
+    public UserDTO.Response.FullProfile giveAdmin(Long id) {
+        final User user = getUserOrThrow(id);
+
+        final Role role = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
+
+        if (!user.getRoles().contains(role)) {
+            user.getRoles().add(role);
+
+            userRepository.save(user);
+
+            return userMapper.toFullProfileDTO(user);
+        }
+        throw new BadRequestException("Пользователь уже имеет роль админа");
     }
 }
