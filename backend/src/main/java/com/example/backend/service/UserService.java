@@ -16,9 +16,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.example.backend.util.GetModelOrThrow.getCategoryOrThrow;
 import static com.example.backend.util.GetModelOrThrow.getUserOrThrow;
 
 @Service
@@ -115,18 +117,45 @@ public class UserService {
         return userMapper.toFullProfileDTO(user);
     }
 
-    public UserDTO.Response.FullProfile giveAdmin(Long id) {
+
+    @Transactional
+    public UserDTO.Response.FullProfile giveRole(Long id, UserDTO.Request.GiveRole giveRole) {
         final User user = getUserOrThrow(id);
 
-        final Role role = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
+        String roleName = giveRole.getRoleName();
 
-        if (!user.getRoles().contains(role)) {
-            user.getRoles().add(role);
+        if (roleName.equals("ROLE_ADMIN")) {
+            final Role role = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
+            if (!user.getRoles().contains(role)) {
+                user.getRoles().add(role);
+                userRepository.save(user);
+                return userMapper.toFullProfileDTO(user);
+            }
+        } else if (roleName.startsWith("ROLE_MODERATOR_")) {
+            try {
+                Long categoryId = Long.parseLong(roleName.substring("ROLE_MODERATOR_".length()));
+                //Проверка, что есть такая категория
+                getCategoryOrThrow(categoryId);
 
-            userRepository.save(user);
+                // Получаем роль или создаём новую
+                final Role role = roleRepository.findByName(roleName).orElseGet(() -> {
+                    Role newRole = Role.builder().name(roleName).build();
+                    return roleRepository.save(newRole);
+                });
 
-            return userMapper.toFullProfileDTO(user);
+                if (!user.getRoles().contains(role)) {
+                    user.getRoles().add(role);
+                    userRepository.save(user);
+                    return userMapper.toFullProfileDTO(user);
+                }
+            } catch (NumberFormatException e) {
+                throw new BadRequestException("Роли - " + roleName + ", не существует");
+            } catch (NotFoundException e) {
+                throw new BadRequestException("Нету категории под эту роль");
+            }
+
         }
-        throw new BadRequestException("Пользователь уже имеет роль админа");
+        throw new BadRequestException("Пользователь уже имеет данную роль");
     }
+
 }

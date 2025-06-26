@@ -69,6 +69,11 @@ public enum UserDTO {
             @NotBlank
             String refreshToken;
         }
+
+        @Value
+        public static class GiveRole implements RoleName {
+            String roleName;
+        }
     }
 
     public enum Response {
@@ -145,6 +150,11 @@ public enum UserDTO {
     private interface Roles {
         @Schema(description = "Список ролей пользователя", example = "[\"ROLE_USER\"]")
         Set<Role> getRoles();
+    }
+
+    private interface RoleName {
+        @Schema(description = "Название роли", example = "[\"ROLE_USER\"]")
+        String getRoleName();
     }
 
     private interface AccessToken {
