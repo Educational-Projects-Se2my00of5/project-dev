@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/CreatePost.css">
+    <title>Создать пост</title>
+    
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">Социальный Сайт</div>
+            <nav class="nav-links">
+                <a href="main.html">Главная</a>
+                <a href="Categories.html">Категории</a>
+                <a href="#">Профиль</a>
+                <a href="#">Выйти</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <h1 class="page-title">Создать пост</h1>
+        
+        <form class="create-post-form">
+            <div class="form-group">
+                <label for="category" class="form-label">Категория</label>
+                <select id="category" class="form-control" required>
+                    <option value="" disabled selected>Выберите категорию</option>
+                    <option value="programming">Программирование</option>
+                    <option value="technology">Технологии</option>
+                    <option value="science">Наука</option>
+                    <option value="art">Искусство</option>
+                    <option value="politics">Политика</option>
+                    <option value="sports">Спорт</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="title" class="form-label">Название</label>
+                <input type="text" id="title" class="form-control" placeholder="Введите название поста" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description" class="form-label">Краткое описание</label>
+                <input type="text" id="description" class="form-control" placeholder="Кратко опишите содержание поста">
+            </div>
+            
+            <div class="form-group">
+                <label for="content" class="form-label">Содержание</label>
+                <textarea id="content" class="form-control" placeholder="Напишите ваш пост здесь..." required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Теги</label>
+                <div class="tags-container" id="tags-container">
+                    <!-- Теги будут добавляться здесь -->
+                </div>
+                <div class="tag-input-container">
+                    <input type="text" class="tag-input" id="tag-input" placeholder="Добавьте теги">
+                    <div class="tag-suggestions" id="tag-suggestions">
+                        <div class="tag-suggestion">#программирование</div>
+                        <div class="tag-suggestion">#технологии</div>
+                        <div class="tag-suggestion">#наука</div>
+                        <div class="tag-suggestion">#искусство</div>
+                        <div class="tag-suggestion">#политика</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel">Отмена</button>
+                <button type="submit" class="btn btn-submit">Опубликовать</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="js/CreatePost.js"></script>
+
+</body>
+</html>
