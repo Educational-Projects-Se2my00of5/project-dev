@@ -42,7 +42,7 @@ public class AuthService {
             // сравниваем сырой и хэшированный пароль
             if (passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
                 final String refreshToken = jwtProvider.generateRefreshToken(user);
-                redisProvider.addToken(user.getId().toString(), refreshToken, jwtProvider.getJwtRefreshExpiration());
+                redisProvider.addToken(refreshToken, user.getId().toString(), jwtProvider.getJwtRefreshExpiration());
 
                 return userMapper.toTokenAndShortUserInfoDTO(user, refreshToken);
             } else {
@@ -70,7 +70,7 @@ public class AuthService {
         userRepository.save(user);
 
         final String refreshToken = jwtProvider.generateRefreshToken(user);
-        redisProvider.addToken(user.getId().toString(), refreshToken, jwtProvider.getJwtRefreshExpiration());
+        redisProvider.addToken(refreshToken, user.getId().toString(), jwtProvider.getJwtRefreshExpiration());
 
         return userMapper.toTokenAndShortUserInfoDTO(user, refreshToken);
     }
@@ -82,14 +82,14 @@ public class AuthService {
         if (jwtProvider.validateRefreshToken(refreshToken) && userIdFromDB != null) {
             final String email = jwtProvider.getRefreshClaims(refreshToken).getSubject();
             final User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new AuthenticationException("invalid token"));
+                    .orElseThrow(() -> new BadRequestException("invalid token"));
 
             final String userId = user.getId().toString();
 
             if (userId.equals(userIdFromDB)) {
                 redisProvider.deleteToken(refreshToken);
                 refreshToken = jwtProvider.generateRefreshToken(user);
-                redisProvider.addToken(user.getId().toString(), refreshToken, jwtProvider.getJwtRefreshExpiration());
+                redisProvider.addToken(refreshToken, user.getId().toString(), jwtProvider.getJwtRefreshExpiration());
 
                 return userMapper.toPairTokensDTO(
                         jwtProvider.generateAccessToken(user),
@@ -97,7 +97,7 @@ public class AuthService {
                 );
             }
         }
-        throw new BadRequestException("invalid refresh token");
+        throw new AuthenticationException("invalid refresh token " + token.getRefreshToken());
     }
 
     public MessageDTO.Response.GetMessage logout(String authHeader, UserDTO.Request.RefreshToken token) {

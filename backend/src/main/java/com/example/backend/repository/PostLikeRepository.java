@@ -12,9 +12,4 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
     // Метод для поиска лайка по пользователю и посту
     Optional<PostLike> findByUserAndPost(User user, Post post);
 
-    // Метод для подсчета лайков у поста
-    Long countByPost(Post post);
-
-    // Метод для проверки, лайкнул ли пользователь пост
-    boolean existsByUserAndPost(User user, Post post);
 }

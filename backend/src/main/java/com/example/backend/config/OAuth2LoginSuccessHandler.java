@@ -5,6 +5,7 @@ import com.example.backend.model.User;
 import com.example.backend.repository.RoleRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.JwtProvider;
+import com.example.backend.service.RedisProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final RedisProvider redisProvider;
     private final JwtProvider jwtProvider; // Ваш сервис для генерации JWT
 
     @Override
@@ -53,18 +55,19 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             user = userRepository.save(newUser);
         }
 
-        // Генерируем JWT для этого пользователя
+        // Генерируем JWT для этого пользователя и сохраняем
         final String refreshToken = jwtProvider.generateRefreshToken(user);
-
+        redisProvider.addToken(refreshToken, user.getId().toString(), jwtProvider.getJwtRefreshExpiration());
+        
         // Перенаправляем на фронтенд с токеном в параметре
         String targetUrl;
         if (isNewUser) {
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth-success")
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5500/frontend/OauthHandler.html")
                     .queryParam("token", refreshToken)
                     .queryParam("new", "1")
                     .build().toUriString();
         } else {
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth-success")
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5500/frontend/OauthHandler.html")
                     .queryParam("token", refreshToken)
                     .build().toUriString();
         }

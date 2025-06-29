@@ -94,9 +94,6 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1750521573827-12" author="Se2my00of5">
-        <addUniqueConstraint columnNames="title" constraintName="uc_posts_title" tableName="posts"/>
-    </changeSet>
     <changeSet id="1750521573827-13" author="Se2my00of5">
         <addUniqueConstraint columnNames="email" constraintName="uc_users_email" tableName="users"/>
     </changeSet>

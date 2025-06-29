@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -40,6 +42,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -78,7 +81,7 @@ public class SecurityConfig {
                         // поинты auth
                         .requestMatchers("/api/logout").authenticated()
                         .requestMatchers("/api/register", "/api/login",
-                                "/api/new-token-pair", "/oauth2/**"
+                                "/api/new-token-pair", "/oauth2/**", "/login/oauth2/**"
                         ).permitAll()
                         // поинты user
                         .requestMatchers("/api/admin/users/**").hasRole("ADMIN")
@@ -93,9 +96,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/categories/**").hasRole("ADMIN")
                         .requestMatchers("/api/categories/**").permitAll()
                         // поинты комментариев
-                        .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}").permitAll()
-                        .requestMatchers("/api/posts/{postId}/comments/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/posts/{postId}/comments/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/comments/{commentId}").permitAll()
+                        .requestMatchers("/api/admin/comments/**").hasRole("ADMIN")
+                        .requestMatchers("/api/posts/{postId}/comments/**", "/api/comments/**").authenticated()
 
                         .anyRequest().permitAll()
                 )

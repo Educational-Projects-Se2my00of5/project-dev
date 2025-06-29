@@ -10,7 +10,9 @@ import com.example.backend.repository.CommentRepository;
 import com.example.backend.repository.PostLikeRepository;
 import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.specification.PostSpecification;
+import com.example.backend.util.GetModelOrThrow;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.example.backend.util.GetModelOrThrow.getPostOrThrow;
-import static com.example.backend.util.GetModelOrThrow.getUserOrThrow;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -36,7 +36,7 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final PostMapper postMapper;
     private final JwtProvider jwtProvider;
-
+    private final GetModelOrThrow getModelOrThrow;
 
     public Page<PostDTO.Response.ShortInfoPost> getPosts(
             String authHeader,
@@ -44,8 +44,6 @@ public class PostService {
             String titleFilter, Set<Category> categoriesFilter
     ) {
         Long currentUserId = authHeader != null ? jwtProvider.getUserIdFromAuthHeader(authHeader) : null;
-        User currentUser = getUserOrThrow(currentUserId);
-
         Specification<Post> spec = PostSpecification.byFilters(
                 userFilter,
                 titleFilter,
@@ -54,7 +52,7 @@ public class PostService {
         Page<Post> postPage = postRepository.findAll(spec, pageable);
 
         List<PostDTO.Response.ShortInfoPost> dtoList = postPage.getContent().stream()
-                .map(post -> postMapper.toShortInfoDTO(post, currentUser))
+                .map(post -> postMapper.toShortInfoDTO(post, currentUserId))
                 .collect(Collectors.toList());
 
         // Создаем новый объект Page с нашими DTO и информацией о пагинации из старого Page
@@ -62,19 +60,19 @@ public class PostService {
     }
 
     public PostDTO.Response.FullInfoPost getPostById(String authHeader, Long id) {
+
         Long currentUserId = authHeader != null ? jwtProvider.getUserIdFromAuthHeader(authHeader) : null;
 
-        User currentUser = getUserOrThrow(currentUserId);
-        Post post = getPostOrThrow(id);
+        Post post = getModelOrThrow.getPostOrThrow(id);
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
 
-        return postMapper.toFullInfoDTO(post, rootComments, currentUser);
+        return postMapper.toFullInfoDTO(post, rootComments, currentUserId);
     }
 
     public PostDTO.Response.FullInfoPost createPost(String authHeader, PostDTO.Request.CreatePost post) {
         Long userId = jwtProvider.getUserIdFromAuthHeader(authHeader);
-        User author = getUserOrThrow(userId);
+        User author = getModelOrThrow.getUserOrThrow(userId);
 
         Set<Category> categories = categoryRepository.findByIdIn(post.getCategoriesId());
 
@@ -87,14 +85,13 @@ public class PostService {
                 .build();
         newPost = postRepository.save(newPost);
 
-        return postMapper.toFullInfoDTO(newPost, Set.of(), author);
+        return postMapper.toFullInfoDTO(newPost, Set.of(), userId);
     }
 
     public PostDTO.Response.FullInfoPost updatePostAdmin(String authHeader, Long id, PostDTO.Request.EditPost editPost) {
         Long userId = jwtProvider.getUserIdFromAuthHeader(authHeader);
 
-        User currentUser = getUserOrThrow(userId);
-        Post post = getPostOrThrow(id);
+        Post post = getModelOrThrow.getPostOrThrow(id);
 
         Set<Category> categories = categoryRepository.findByIdIn(editPost.getCategoriesId());
 
@@ -106,17 +103,17 @@ public class PostService {
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
 
-        return postMapper.toFullInfoDTO(post, rootComments, currentUser);
+        return postMapper.toFullInfoDTO(post, rootComments, userId);
     }
 
     public MessageDTO.Response.GetMessage deletePost(Long id) {
-        Post post = getPostOrThrow(id);
+        Post post = getModelOrThrow.getPostOrThrow(id);
         postRepository.delete(post);
         return new MessageDTO.Response.GetMessage("success delete post");
     }
 
     public PostDTO.Response.FullInfoPost updatePost(String authHeader, Long id, PostDTO.Request.EditPost editPost) {
-        String authorId = getPostOrThrow(id).getAuthor().getId().toString();
+        String authorId = getModelOrThrow.getPostOrThrow(id).getAuthor().getId().toString();
         String userId = jwtProvider.getUserIdFromAuthHeader(authHeader).toString();
 
         if (userId.equals(authorId)) {
@@ -126,7 +123,7 @@ public class PostService {
     }
 
     public MessageDTO.Response.GetMessage deletePost(String authHeader, Long id) {
-        String authorId = getPostOrThrow(id).getAuthor().getId().toString();
+        String authorId = getModelOrThrow.getPostOrThrow(id).getAuthor().getId().toString();
         String userId = jwtProvider.getUserIdFromAuthHeader(authHeader).toString();
 
         if (userId.equals(authorId)) {
@@ -139,29 +136,27 @@ public class PostService {
     @Transactional
     public PostDTO.Response.FullInfoPost likePost(String authHeader, Long postId) {
         Long currentUserId = jwtProvider.getUserIdFromAuthHeader(authHeader);
+        User currentUser = getModelOrThrow.getUserOrThrow(currentUserId);
+        Post post = getModelOrThrow.getPostOrThrow(postId);
 
-        User currentUser = getUserOrThrow(currentUserId);
-        Post post = getPostOrThrow(postId);
 
-        Optional<PostLike> existingLike = postLikeRepository.findByUserAndPost(currentUser, post);
+        postLikeRepository.findByUserAndPost(currentUser, post)
+                .ifPresentOrElse(
+                        postLike -> {
+                            postLikeRepository.delete(postLike);
+                            post.getLikes().remove(postLike); // транзакция повешана, так что ручками
+                        },
+                        () -> {
+                            PostLike newLike = PostLike.builder().user(currentUser).post(post).build();
+                            postLikeRepository.save(newLike);
+                            post.getLikes().add(newLike);
+                        }
+                );
 
-        if (existingLike.isPresent()) {
-            postLikeRepository.delete(existingLike.get());
-            // Также нужно удалить из коллекции в посте, чтобы размер был корректным
-            post.getLikes().remove(existingLike.get());
-        } else {
-            PostLike newLike = PostLike.builder()
-                    .user(currentUser)
-                    .post(post)
-                    .build();
-            postLikeRepository.save(newLike);
-            // Добавляем новый лайк в коллекцию поста, чтобы не запрашивать пост снова
-            post.getLikes().add(newLike);
-        }
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
 
-        return postMapper.toFullInfoDTO(post, rootComments, currentUser);
+        return postMapper.toFullInfoDTO(post, rootComments, currentUserId);
     }
 
 }
