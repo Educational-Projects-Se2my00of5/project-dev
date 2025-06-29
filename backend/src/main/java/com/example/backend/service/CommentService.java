@@ -31,6 +31,7 @@ public class CommentService {
     public Set<CommentDTO.Response.InfoComment> getReplies(Long commentId) {
         Comment parentComment = getModelOrThrow.getCommentOrThrow(commentId);
 
+
         return parentComment.getReplies().stream()
                 .map(commentMapper::toInfoCommentDTO)
                 .collect(Collectors.toSet());

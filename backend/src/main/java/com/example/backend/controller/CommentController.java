@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping("api/posts/{postId}/comments")
+@RequestMapping("api/")
 @RequiredArgsConstructor
 public class CommentController {
 
@@ -30,7 +30,7 @@ public class CommentController {
     // поэтому отдельный GET-метод здесь не всегда нужен.
     // Если все же нужен, его можно добавить.
 
-    @GetMapping("{commentId}")
+    @GetMapping("comments/{commentId}")
     @Operation(
             summary = "Раскрыть ответы к коментарию",
             tags = {GUEST_TITLE},
@@ -40,7 +40,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getReplies(commentId));
     }
 
-    @PostMapping
+    @PostMapping("/posts/{postId}/comments")
     @Operation(
             summary = "Создать новый комментарий к посту",
             tags = {USER_TITLE},
@@ -54,14 +54,13 @@ public class CommentController {
         return ResponseEntity.ok(commentService.createComment(authHeader, postId, comment));
     }
 
-    @PutMapping("{commentId}")
+    @PutMapping("comments/{commentId}")
     @Operation(
             summary = "Редактировать свой комментарий",
             tags = {USER_TITLE},
             security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<CommentDTO.Response.InfoComment> updateComment(
-            @PathVariable Long postId,
             @PathVariable Long commentId,
             @Valid @RequestBody CommentDTO.Request.UpdateComment comment
     ) {
@@ -72,7 +71,7 @@ public class CommentController {
     // Возможно сделаю чтобы комменты не удалялись из бд, а становились невидимы обычным пользователям(и создателю тож)
     // но не сегодня
 
-    @DeleteMapping("{commentId}")
+    @DeleteMapping("comments/{commentId}")
     @Operation(
             summary = "Удалить свой комментарий",
             tags = {USER_TITLE},
@@ -80,21 +79,19 @@ public class CommentController {
     )
     public ResponseEntity<MessageDTO.Response.GetMessage> deleteMyComment(
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long postId,
             @PathVariable Long commentId
     ) {
 
         return ResponseEntity.ok(commentService.deleteMyComment(commentId, authHeader));
     }
 
-    @DeleteMapping("admin/{commentId}")
+    @DeleteMapping("admin/comments/{commentId}")
     @Operation(
             summary = "Удалить комментарий",
             tags = {ADMIN_TITLE},
             security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<MessageDTO.Response.GetMessage> deleteComment(
-            @PathVariable Long postId,
             @PathVariable Long commentId
     ) {
         return ResponseEntity.ok(commentService.deleteComment(commentId));
