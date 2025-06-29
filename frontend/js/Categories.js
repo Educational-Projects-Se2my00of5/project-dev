@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Добавляем обработчик клика
         categoryCard.addEventListener('click', () => {
-            window.location.href = `/category/${category.id}`;
+            window.location.href = `Category.html?id=${category.id}`;
         });
         
         return categoryCard;

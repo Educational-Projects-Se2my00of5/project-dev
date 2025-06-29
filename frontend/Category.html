@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/Category.css">
     <title>Категория</title>
+    <link rel="stylesheet" href="css/Category.css">
 </head>
 <body>
     <header>
@@ -13,90 +13,19 @@
             <nav class="nav-links">
                 <a href="main.html">Главная</a>
                 <a href="Categories.html">Категории</a>
-                <a href="#">Профиль</a>
+                <a href="Profile.html">Профиль</a>
                 <a href="#">Выйти</a>
             </nav>
         </div>
     </header>
     
-    <div class="content">
-        <h1 class="page-title">Программирование</h1>
-        <div class="posts-container">
-            <!-- Пример поста 1 -->
-            <div class="post">
-                <div class="post-votes">
-                    <button class="vote-btn">↑</button>
-                    <div class="vote-count">342</div>
-                    <button class="vote-btn">↓</button>
-                </div>
-                <div class="post-content">
-                    <h3 class="post-title">Как я научился программировать за 6 месяцев и нашел работу</h3>
-                    <div class="post-meta">Опубликовано пользователем User123, 5 часов назад</div>
-                    <p class="post-excerpt">
-                        Хочу поделиться своей историей, как я с нуля освоил Python и Django за полгода
-                        и устроился джуниор-разработчиком...
-                    </p>
-                    <div class="post-tags">
-                        <a href="#" class="post-tag">#программирование</a>
-                        <a href="#" class="post-tag">#карьера</a>
-                        <a href="#" class="post-tag">#python</a>
-                    </div>
-                    <div class="post-actions">
-                        <span class="post-action">87 комментариев</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Пример поста 2 -->
-            <div class="post">
-                <div class="post-votes">
-                    <button class="vote-btn">↑</button>
-                    <div class="vote-count">215</div>
-                    <button class="vote-btn">↓</button>
-                </div>
-                <div class="post-content">
-                    <h3 class="post-title">Обзор нового фреймворка для веб-разработки</h3>
-                    <div class="post-meta">Опубликовано пользователем DevMaster, 12 часов назад</div>
-                    <p class="post-excerpt">
-                        На этой неделе вышел новый JavaScript-фреймворк HyperApp 3.0. В статье разберу его
-                        основные возможности и сравню с React и Vue...
-                    </p>
-                    <div class="post-tags">
-                        <a href="#" class="post-tag">#вебразработка</a>
-                        <a href="#" class="post-tag">#javascript</a>
-                        <a href="#" class="post-tag">#фреймворки</a>
-                    </div>
-                    <div class="post-actions">
-                        <span class="post-action">42 комментария</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Пример поста 3 -->
-            <div class="post">
-                <div class="post-votes">
-                    <button class="vote-btn">↑</button>
-                    <div class="vote-count">156</div>
-                    <button class="vote-btn">↓</button>
-                </div>
-                <div class="post-content">
-                    <h3 class="post-title">Лучшие практики работы с Git в команде</h3>
-                    <div class="post-meta">Опубликовано пользователем GitPro, 1 день назад</div>
-                    <p class="post-excerpt">
-                        За 5 лет работы в разных командах я собрал коллекцию лучших практик использования Git,
-                        которые помогут избежать конфликтов и сохранить историю изменений чистой...
-                    </p>
-                    <div class="post-tags">
-                        <a href="#" class="post-tag">#git</a>
-                        <a href="#" class="post-tag">#советы</a>
-                        <a href="#" class="post-tag">#работавкоманде</a>
-                    </div>
-                    <div class="post-actions">
-                        <span class="post-action">29 комментариев</span>
-                    </div>
-                </div>
-            </div>
+    <div class="category-main">
+        <h1 class="category-name" id="category-name">Загрузка...</h1>
+        <div class="posts-container" id="posts-container">
+            <div class="loading">Загрузка постов...</div>
         </div>
     </div>
+    
+    <script src="js/Category.js"></script>
 </body>
 </html>
