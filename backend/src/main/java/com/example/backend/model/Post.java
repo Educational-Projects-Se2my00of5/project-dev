@@ -28,7 +28,7 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
@@ -36,7 +36,8 @@ public class Post {
     private String content;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PostLike> likes;
+    @Builder.Default
+    private Set<PostLike> likes= new HashSet<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
