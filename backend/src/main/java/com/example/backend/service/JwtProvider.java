@@ -95,7 +95,7 @@ public class JwtProvider {
 
     public Long getUserIdFromAuthHeader(String authHeader) {
         Claims claims = getAccessClaims(getTokenFromAuthHeader(authHeader));
-        return (Long) claims.get("userId");
+        return Long.parseLong(claims.get("userId").toString());
     }
 
     public String getTokenFromAuthHeader(String authHeader) {
