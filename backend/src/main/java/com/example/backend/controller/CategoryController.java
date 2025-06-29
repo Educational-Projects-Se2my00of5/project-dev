@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/categories")
+@RequestMapping("api")
 @RequiredArgsConstructor
 public class CategoryController {
 
@@ -26,13 +26,13 @@ public class CategoryController {
 
     // --- Публичные эндпоинты ---
 
-    @GetMapping("/{id}")
+    @GetMapping("categories/{id}")
     @Operation(summary = "Получить категорию по id", tags = {GUEST_TITLE})
     public ResponseEntity<CategoryDTO.Response.FullInfoCategory> getCategory(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.getCategory(id));
     }
 
-    @GetMapping
+    @GetMapping("categories")
     @Operation(summary = "Получить список всех категорий", tags = {GUEST_TITLE})
     public ResponseEntity<List<CategoryDTO.Response.FullInfoCategory>> getAllCategories(
             @RequestParam(required = false) String nameFilter
@@ -42,7 +42,7 @@ public class CategoryController {
 
     // --- Эндпоинты для администратора ---
 
-    @PostMapping
+    @PostMapping("admin/categories")
     @Operation(
             summary = "Создать новую категорию (только для админа)",
             tags = {ADMIN_TITLE},
@@ -54,7 +54,7 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.createCategory(category));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("admin/categories/{id}")
     @Operation(
             summary = "Обновить существующую категорию (только для админа)",
             tags = {ADMIN_TITLE},
@@ -67,7 +67,7 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.updateCategory(id, updateDto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("admin/categories/{id}")
     @Operation(
             summary = "Удалить категорию (только для админа)",
             tags = {ADMIN_TITLE},
