@@ -10,6 +10,7 @@ import com.example.backend.model.Comment;
 import com.example.backend.model.Post;
 import com.example.backend.model.User;
 import com.example.backend.repository.CommentRepository;
+import com.example.backend.util.GetModelOrThrow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +26,10 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final JwtProvider jwtProvider;
-
+    private final GetModelOrThrow getModelOrThrow;
 
     public Set<CommentDTO.Response.InfoComment> getReplies(Long commentId) {
-        Comment parentComment = getCommentOrThrow(commentId);
+        Comment parentComment = getModelOrThrow.getCommentOrThrow(commentId);
 
         return parentComment.getReplies().stream()
                 .map(commentMapper::toInfoCommentDTO)
@@ -40,14 +41,14 @@ public class CommentService {
 
         Comment newComment = Comment
                 .builder()
-                .user(getUserOrThrow(userId))
-                .post(getPostOrThrow(postId))
+                .user(getModelOrThrow.getUserOrThrow(userId))
+                .post(getModelOrThrow.getPostOrThrow(postId))
                 .body(comment.getBody())
                 .build();
 
         // Логика для вложенных комментариев
         if (comment.getParentCommentId() != null) {
-            Comment parentComment = getCommentOrThrow(comment.getParentCommentId());
+            Comment parentComment = getModelOrThrow.getCommentOrThrow(comment.getParentCommentId());
 
             // Проверка, что родительский комментарий принадлежит тому же посту
             if (!parentComment.getPost().getId().equals(postId)) {
@@ -62,7 +63,7 @@ public class CommentService {
     }
 
     public CommentDTO.Response.InfoComment updateComment(Long commentId, CommentDTO.Request.UpdateComment comment) {
-        Comment commentToUpdate = getCommentOrThrow(commentId);
+        Comment commentToUpdate = getModelOrThrow.getCommentOrThrow(commentId);
 
         commentToUpdate.setBody(comment.getBody());
 
@@ -74,14 +75,14 @@ public class CommentService {
 
     public MessageDTO.Response.GetMessage deleteMyComment(Long commentId, String authHeader) {
         Long currentUserId = jwtProvider.getUserIdFromAuthHeader(authHeader);
-        Comment commentToDelete = getCommentOrThrow(commentId);
+        Comment commentToDelete = getModelOrThrow.getCommentOrThrow(commentId);
 
         // проверка, что пользователь автор комментария
         if (commentToDelete.getUser().getId().equals(currentUserId)) {
             return deleteComment(commentId);
         }
 
-        User user = getUserOrThrow(currentUserId);
+        User user = getModelOrThrow.getUserOrThrow(currentUserId);
         Post post = commentToDelete.getPost();
 
         // проверка, что пользователь модератор, хотя бы одной категории из поста
@@ -101,7 +102,7 @@ public class CommentService {
     }
 
     public MessageDTO.Response.GetMessage deleteComment(Long commentId) {
-        Comment commentToDelete = getCommentOrThrow(commentId);
+        Comment commentToDelete = getModelOrThrow.getCommentOrThrow(commentId);
 
         commentToDelete.setDeleted(true);
         return new MessageDTO.Response.GetMessage("success delete comment");

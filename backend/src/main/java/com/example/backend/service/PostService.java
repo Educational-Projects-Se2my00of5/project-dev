@@ -10,6 +10,7 @@ import com.example.backend.repository.CommentRepository;
 import com.example.backend.repository.PostLikeRepository;
 import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.specification.PostSpecification;
+import com.example.backend.util.GetModelOrThrow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,7 +36,7 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final PostMapper postMapper;
     private final JwtProvider jwtProvider;
-
+    private final GetModelOrThrow getModelOrThrow;
 
     public Page<PostDTO.Response.ShortInfoPost> getPosts(
             String authHeader,
@@ -44,7 +45,7 @@ public class PostService {
     ) {
         Long currentUserId = authHeader != null ? jwtProvider.getUserIdFromAuthHeader(authHeader) : null;
 
-        Optional<User> currentUser = getOptionalUser(currentUserId);
+        Optional<User> currentUser = getModelOrThrow.getOptionalUser(currentUserId);
 
         Specification<Post> spec = PostSpecification.byFilters(
                 userFilter,
@@ -64,8 +65,8 @@ public class PostService {
     public PostDTO.Response.FullInfoPost getPostById(String authHeader, Long id) {
         Long currentUserId = authHeader != null ? jwtProvider.getUserIdFromAuthHeader(authHeader) : null;
 
-        Optional<User> currentUser = getOptionalUser(currentUserId);
-        Post post = getPostOrThrow(id);
+        Optional<User> currentUser = getModelOrThrow.getOptionalUser(currentUserId);
+        Post post = getModelOrThrow.getPostOrThrow(id);
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
 
@@ -74,7 +75,7 @@ public class PostService {
 
     public PostDTO.Response.FullInfoPost createPost(String authHeader, PostDTO.Request.CreatePost post) {
         Long userId = jwtProvider.getUserIdFromAuthHeader(authHeader);
-        User author = getUserOrThrow(userId);
+        User author = getModelOrThrow.getUserOrThrow(userId);
 
         Set<Category> categories = categoryRepository.findByIdIn(post.getCategoriesId());
 
@@ -93,8 +94,8 @@ public class PostService {
     public PostDTO.Response.FullInfoPost updatePostAdmin(String authHeader, Long id, PostDTO.Request.EditPost editPost) {
         Long userId = jwtProvider.getUserIdFromAuthHeader(authHeader);
 
-        Optional<User> currentUser = getOptionalUser(userId);
-        Post post = getPostOrThrow(id);
+        Optional<User> currentUser = getModelOrThrow.getOptionalUser(userId);
+        Post post = getModelOrThrow.getPostOrThrow(id);
 
         Set<Category> categories = categoryRepository.findByIdIn(editPost.getCategoriesId());
 
@@ -110,13 +111,13 @@ public class PostService {
     }
 
     public MessageDTO.Response.GetMessage deletePost(Long id) {
-        Post post = getPostOrThrow(id);
+        Post post = getModelOrThrow.getPostOrThrow(id);
         postRepository.delete(post);
         return new MessageDTO.Response.GetMessage("success delete post");
     }
 
     public PostDTO.Response.FullInfoPost updatePost(String authHeader, Long id, PostDTO.Request.EditPost editPost) {
-        String authorId = getPostOrThrow(id).getAuthor().getId().toString();
+        String authorId = getModelOrThrow.getPostOrThrow(id).getAuthor().getId().toString();
         String userId = jwtProvider.getUserIdFromAuthHeader(authHeader).toString();
 
         if (userId.equals(authorId)) {
@@ -126,7 +127,7 @@ public class PostService {
     }
 
     public MessageDTO.Response.GetMessage deletePost(String authHeader, Long id) {
-        String authorId = getPostOrThrow(id).getAuthor().getId().toString();
+        String authorId = getModelOrThrow.getPostOrThrow(id).getAuthor().getId().toString();
         String userId = jwtProvider.getUserIdFromAuthHeader(authHeader).toString();
 
         if (userId.equals(authorId)) {
@@ -140,8 +141,8 @@ public class PostService {
     public PostDTO.Response.FullInfoPost likePost(String authHeader, Long postId) {
         Long currentUserId = jwtProvider.getUserIdFromAuthHeader(authHeader);
 
-        User currentUser = getUserOrThrow(currentUserId);
-        Post post = getPostOrThrow(postId);
+        User currentUser = getModelOrThrow.getUserOrThrow(currentUserId);
+        Post post = getModelOrThrow.getPostOrThrow(postId);
 
         Optional<PostLike> existingLike = postLikeRepository.findByUserAndPost(currentUser, post);
 

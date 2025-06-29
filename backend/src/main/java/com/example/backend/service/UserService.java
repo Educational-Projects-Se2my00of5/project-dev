@@ -10,6 +10,7 @@ import com.example.backend.model.User;
 import com.example.backend.repository.RoleRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.specification.UserSpecification;
+import com.example.backend.util.GetModelOrThrow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.backend.util.GetModelOrThrow.getCategoryOrThrow;
-import static com.example.backend.util.GetModelOrThrow.getUserOrThrow;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +32,7 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final GetModelOrThrow getModelOrThrow;
 
     public UserDTO.Response.FullProfile getMyProfile(String authHeader) {
         final User user = getUserFromAuthHeader(authHeader);
@@ -73,7 +74,7 @@ public class UserService {
     }
 
     public UserDTO.Response.ShortProfile getUser(Long id) {
-        final User user = getUserOrThrow(id);
+        final User user = getModelOrThrow.getUserOrThrow(id);
 
         return userMapper.toShortProfileDTO(user);
     }
@@ -103,7 +104,7 @@ public class UserService {
     }
 
     public UserDTO.Response.FullProfile editUser(Long id, UserDTO.Request.EditUser editUser) {
-        User user = getUserOrThrow(id);
+        User user = getModelOrThrow.getUserOrThrow(id);
 
         if (editUser.getUsername() != null) {
             user.setUsername(editUser.getUsername());
@@ -120,7 +121,7 @@ public class UserService {
 
     @Transactional
     public UserDTO.Response.FullProfile giveRole(Long id, UserDTO.Request.GiveRole giveRole) {
-        final User user = getUserOrThrow(id);
+        final User user = getModelOrThrow.getUserOrThrow(id);
 
         String roleName = giveRole.getRoleName();
 
@@ -135,7 +136,7 @@ public class UserService {
             try {
                 Long categoryId = Long.parseLong(roleName.substring("ROLE_MODERATOR_".length()));
                 //Проверка, что есть такая категория
-                getCategoryOrThrow(categoryId);
+                getModelOrThrow.getCategoryOrThrow(categoryId);
 
                 // Получаем роль или создаём новую
                 final Role role = roleRepository.findByName(roleName).orElseGet(() -> {
