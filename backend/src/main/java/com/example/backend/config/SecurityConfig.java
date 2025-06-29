@@ -81,7 +81,7 @@ public class SecurityConfig {
                         // поинты auth
                         .requestMatchers("/api/logout").authenticated()
                         .requestMatchers("/api/register", "/api/login",
-                                "/api/new-token-pair", "/oauth2/**"
+                                "/api/new-token-pair", "/oauth2/**", "/login/oauth2/**"
                         ).permitAll()
                         // поинты user
                         .requestMatchers("/api/admin/users/**").hasRole("ADMIN")

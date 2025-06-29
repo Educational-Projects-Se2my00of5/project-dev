@@ -62,12 +62,12 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         // Перенаправляем на фронтенд с токеном в параметре
         String targetUrl;
         if (isNewUser) {
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5500/frontend/html/oauth-success.html")
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5500/frontend/OauthHandler.html")
                     .queryParam("token", refreshToken)
                     .queryParam("new", "1")
                     .build().toUriString();
         } else {
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5500/frontend/html/oauth-success.html")
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5500/frontend/OauthHandler.html")
                     .queryParam("token", refreshToken)
                     .build().toUriString();
         }

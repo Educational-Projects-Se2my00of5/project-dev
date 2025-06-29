@@ -55,8 +55,6 @@ public enum UserDTO {
 
         @Value
         public static class EditPassword implements OldPassword, Password {
-
-            @NotBlank
             String oldPassword;
 
             @NotBlank

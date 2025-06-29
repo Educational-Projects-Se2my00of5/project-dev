@@ -54,10 +54,10 @@ public class UserService {
     }
 
     public MessageDTO.Response.GetMessage updatePassword(String authHeader, UserDTO.Request.EditPassword editPassword) {
-
         User user = getUserFromAuthHeader(authHeader);
 
-        if (passwordEncoder.matches(editPassword.getOldPassword(), user.getPassword())) {
+
+        if (user.getPassword() == null || passwordEncoder.matches(editPassword.getOldPassword(), user.getPassword())) {
             String newPassword = passwordEncoder.encode(editPassword.getPassword());
 
             user.setPassword(newPassword);
