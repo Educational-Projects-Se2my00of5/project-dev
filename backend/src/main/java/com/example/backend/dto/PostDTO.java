@@ -26,7 +26,7 @@ public enum PostDTO {
             @NotBlank
             String content;
 
-            @NotBlank
+            @NotNull
             Set<Long> categoriesId;
         }
 
@@ -39,7 +39,7 @@ public enum PostDTO {
             @NotBlank
             String content;
 
-            @NotBlank
+            @NotNull
             Set<Long> categoriesId;
         }
 
@@ -89,7 +89,7 @@ public enum PostDTO {
             @NotNull
             Long id;
 
-            @NotBlank
+            @NotNull
             UserDTO.Response.ShortProfile shortUserInfo;
 
             @NotBlank
