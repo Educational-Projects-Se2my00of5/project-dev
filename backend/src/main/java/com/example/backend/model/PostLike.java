@@ -31,4 +31,9 @@ public class PostLike {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @Override
+    public String toString() {
+        return user.getId().toString()+ " user-post " + post.getId().toString();
+    }
 }

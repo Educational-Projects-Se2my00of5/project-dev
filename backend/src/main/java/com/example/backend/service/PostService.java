@@ -44,9 +44,6 @@ public class PostService {
             String titleFilter, Set<Category> categoriesFilter
     ) {
         Long currentUserId = authHeader != null ? jwtProvider.getUserIdFromAuthHeader(authHeader) : null;
-
-        Optional<User> currentUser = getModelOrThrow.getOptionalUser(currentUserId);
-
         Specification<Post> spec = PostSpecification.byFilters(
                 userFilter,
                 titleFilter,
@@ -55,7 +52,7 @@ public class PostService {
         Page<Post> postPage = postRepository.findAll(spec, pageable);
 
         List<PostDTO.Response.ShortInfoPost> dtoList = postPage.getContent().stream()
-                .map(post -> postMapper.toShortInfoDTO(post, currentUser))
+                .map(post -> postMapper.toShortInfoDTO(post, currentUserId))
                 .collect(Collectors.toList());
 
         // Создаем новый объект Page с нашими DTO и информацией о пагинации из старого Page
@@ -63,14 +60,14 @@ public class PostService {
     }
 
     public PostDTO.Response.FullInfoPost getPostById(String authHeader, Long id) {
+
         Long currentUserId = authHeader != null ? jwtProvider.getUserIdFromAuthHeader(authHeader) : null;
 
-        Optional<User> currentUser = getModelOrThrow.getOptionalUser(currentUserId);
         Post post = getModelOrThrow.getPostOrThrow(id);
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
 
-        return postMapper.toFullInfoDTO(post, rootComments, currentUser);
+        return postMapper.toFullInfoDTO(post, rootComments, currentUserId);
     }
 
     public PostDTO.Response.FullInfoPost createPost(String authHeader, PostDTO.Request.CreatePost post) {
@@ -88,13 +85,12 @@ public class PostService {
                 .build();
         newPost = postRepository.save(newPost);
 
-        return postMapper.toFullInfoDTO(newPost, Set.of(), Optional.of(author));
+        return postMapper.toFullInfoDTO(newPost, Set.of(), userId);
     }
 
     public PostDTO.Response.FullInfoPost updatePostAdmin(String authHeader, Long id, PostDTO.Request.EditPost editPost) {
         Long userId = jwtProvider.getUserIdFromAuthHeader(authHeader);
 
-        Optional<User> currentUser = getModelOrThrow.getOptionalUser(userId);
         Post post = getModelOrThrow.getPostOrThrow(id);
 
         Set<Category> categories = categoryRepository.findByIdIn(editPost.getCategoriesId());
@@ -107,7 +103,7 @@ public class PostService {
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
 
-        return postMapper.toFullInfoDTO(post, rootComments, currentUser);
+        return postMapper.toFullInfoDTO(post, rootComments, userId);
     }
 
     public MessageDTO.Response.GetMessage deletePost(Long id) {
@@ -160,7 +156,7 @@ public class PostService {
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
 
-        return postMapper.toFullInfoDTO(post, rootComments, Optional.of(currentUser));
+        return postMapper.toFullInfoDTO(post, rootComments, currentUserId);
     }
 
 }

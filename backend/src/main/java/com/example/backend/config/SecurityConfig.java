@@ -96,9 +96,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/categories/**").hasRole("ADMIN")
                         .requestMatchers("/api/categories/**").permitAll()
                         // поинты комментариев
-                        .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}").permitAll()
-                        .requestMatchers("/api/posts/{postId}/comments/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/posts/{postId}/comments/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/comments/{commentId}").permitAll()
+                        .requestMatchers("/api/admin/comments/**").hasRole("ADMIN")
+                        .requestMatchers("/api/posts/{postId}/comments/**", "/api/comments/**").authenticated()
 
                         .anyRequest().permitAll()
                 )

@@ -36,8 +36,10 @@ public class CommentController {
             tags = {GUEST_TITLE},
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Set<CommentDTO.Response.InfoComment>> getReplies(@PathVariable Long commentId) {
-        return ResponseEntity.ok(commentService.getReplies(commentId));
+    public ResponseEntity<Set<CommentDTO.Response.InfoComment>> getReplies(
+            @Parameter(hidden = true) @RequestHeader(name = "Authorization", required = false) String authHeader,
+            @PathVariable Long commentId) {
+        return ResponseEntity.ok(commentService.getReplies(authHeader, commentId));
     }
 
     @PostMapping("/posts/{postId}/comments")

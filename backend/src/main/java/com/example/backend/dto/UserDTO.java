@@ -151,7 +151,7 @@ public enum UserDTO {
     }
 
     private interface RoleName {
-        @Schema(description = "Название роли", example = "[\"ROLE_USER\"]")
+        @Schema(description = "Название роли", example = "ROLE_USER")
         String getRoleName();
     }
 

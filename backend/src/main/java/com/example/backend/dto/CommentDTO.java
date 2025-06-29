@@ -34,7 +34,7 @@ public enum CommentDTO {
         ;
 
         @Value
-        public static class InfoComment implements Id, Body, AuthorInfo, CreateAt, UpdateAt, Deleted {
+        public static class InfoComment implements Id, Body, AuthorInfo, CreateAt, UpdateAt, ParentCommentId, Deleted {
             Long id;
 
             String body;
@@ -44,6 +44,8 @@ public enum CommentDTO {
             LocalDateTime createdAt;
 
             LocalDateTime updatedAt;
+
+            Long parentCommentId;
 
             Boolean deleted;
         }

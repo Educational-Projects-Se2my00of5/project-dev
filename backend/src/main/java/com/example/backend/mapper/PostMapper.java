@@ -10,6 +10,7 @@ import org.mapstruct.*;
 import java.util.Optional;
 import java.util.Set;
 
+
 @Mapper(
         componentModel = "spring",
         uses = {UserMapper.class, CategoryMapper.class, CommentMapper.class}
@@ -25,26 +26,23 @@ public interface PostMapper {
     PostDTO.Response.FullInfoPost toFullInfoDTO(
             Post post,
             Set<Comment> rootComments,
-            @Context Optional<User> currentUser
+            @Context Long currentUserId
     );
 
     @Mapping(target = "shortUserInfo", source = "post.author")
     @Mapping(target = "categories", source = "post.categories")
     @Mapping(target = "likes", ignore = true)
     @Mapping(target = "hasLiked", ignore = true)
-    PostDTO.Response.ShortInfoPost toShortInfoDTO(Post post, @Context Optional<User> currentUser);
+    PostDTO.Response.ShortInfoPost toShortInfoDTO(Post post, @Context Long currentUserId);
 
 
     @AfterMapping
     default void completePostFullInfoDTO(
             Post post,
             @MappingTarget PostDTO.Response.FullInfoPost dto,
-            @Context Optional<User> currentUser
+            @Context Long currentUserId
     ) {
         if (post == null) return;
-
-        User user = currentUser.orElse(null);
-        Long currentUserId = (user != null) ? user.getId() : null;
 
         // 1. Вычисляем количество лайков
         long likeCount = post.getLikes().size();
@@ -67,12 +65,9 @@ public interface PostMapper {
     default void completePostShortInfoDTO(
             Post post,
             @MappingTarget PostDTO.Response.ShortInfoPost dto,
-            @Context Optional<User> currentUser
+            @Context Long currentUserId
     ) {
         if (post == null) return;
-
-        User user = currentUser.orElse(null);
-        Long currentUserId = (user != null) ? user.getId() : null;
 
 
         // 1. Вычисляем количество лайков

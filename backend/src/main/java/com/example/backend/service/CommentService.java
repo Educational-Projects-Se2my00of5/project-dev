@@ -28,12 +28,12 @@ public class CommentService {
     private final JwtProvider jwtProvider;
     private final GetModelOrThrow getModelOrThrow;
 
-    public Set<CommentDTO.Response.InfoComment> getReplies(Long commentId) {
+    public Set<CommentDTO.Response.InfoComment> getReplies(String authHeader, Long commentId) {
         Comment parentComment = getModelOrThrow.getCommentOrThrow(commentId);
 
-
+        Long currentUserId = authHeader != null ? jwtProvider.getUserIdFromAuthHeader(authHeader) : null;
         return parentComment.getReplies().stream()
-                .map(commentMapper::toInfoCommentDTO)
+                .map(comment -> commentMapper.chooseMapToInfoDto(comment, currentUserId))
                 .collect(Collectors.toSet());
     }
 
@@ -106,6 +106,7 @@ public class CommentService {
         Comment commentToDelete = getModelOrThrow.getCommentOrThrow(commentId);
 
         commentToDelete.setDeleted(true);
+        commentRepository.save(commentToDelete);
         return new MessageDTO.Response.GetMessage("success delete comment");
     }
 
