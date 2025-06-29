@@ -4,6 +4,7 @@ import com.example.backend.dto.PostDTO;
 import com.example.backend.model.Comment;
 import com.example.backend.model.Post;
 import com.example.backend.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
 
 import java.util.Optional;
@@ -47,6 +48,7 @@ public interface PostMapper {
 
         // 1. Вычисляем количество лайков
         long likeCount = post.getLikes().size();
+
         dto.setLikes(likeCount);
 
         // 2. Проверяем, лайкнул ли текущий пользователь

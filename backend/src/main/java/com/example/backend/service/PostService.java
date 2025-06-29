@@ -12,6 +12,7 @@ import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.specification.PostSpecification;
 import com.example.backend.util.GetModelOrThrow;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.example.backend.util.GetModelOrThrow.*;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -140,25 +140,23 @@ public class PostService {
     @Transactional
     public PostDTO.Response.FullInfoPost likePost(String authHeader, Long postId) {
         Long currentUserId = jwtProvider.getUserIdFromAuthHeader(authHeader);
-
         User currentUser = getModelOrThrow.getUserOrThrow(currentUserId);
         Post post = getModelOrThrow.getPostOrThrow(postId);
 
-        Optional<PostLike> existingLike = postLikeRepository.findByUserAndPost(currentUser, post);
 
-        if (existingLike.isPresent()) {
-            postLikeRepository.delete(existingLike.get());
-            // Также нужно удалить из коллекции в посте, чтобы размер был корректным
-            post.getLikes().remove(existingLike.get());
-        } else {
-            PostLike newLike = PostLike.builder()
-                    .user(currentUser)
-                    .post(post)
-                    .build();
-            postLikeRepository.save(newLike);
-            // Добавляем новый лайк в коллекцию поста, чтобы не запрашивать пост снова
-            post.getLikes().add(newLike);
-        }
+        postLikeRepository.findByUserAndPost(currentUser, post)
+                .ifPresentOrElse(
+                        postLike -> {
+                            postLikeRepository.delete(postLike);
+                            post.getLikes().remove(postLike); // транзакция повешана, так что ручками
+                        },
+                        () -> {
+                            PostLike newLike = PostLike.builder().user(currentUser).post(post).build();
+                            postLikeRepository.save(newLike);
+                            post.getLikes().add(newLike);
+                        }
+                );
+
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
 
