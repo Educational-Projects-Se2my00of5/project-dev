@@ -82,7 +82,7 @@ public class AuthService {
         if (jwtProvider.validateRefreshToken(refreshToken) && userIdFromDB != null) {
             final String email = jwtProvider.getRefreshClaims(refreshToken).getSubject();
             final User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new AuthenticationException("invalid token"));
+                    .orElseThrow(() -> new BadRequestException("invalid token"));
 
             final String userId = user.getId().toString();
 
@@ -97,7 +97,7 @@ public class AuthService {
                 );
             }
         }
-        throw new BadRequestException("invalid refresh token "+ token.getRefreshToken());
+        throw new AuthenticationException("invalid refresh token " + token.getRefreshToken());
     }
 
     public MessageDTO.Response.GetMessage logout(String authHeader, UserDTO.Request.RefreshToken token) {

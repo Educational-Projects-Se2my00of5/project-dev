@@ -10,6 +10,8 @@ import com.example.backend.repository.CommentRepository;
 import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.UserRepository;
 
+import java.util.Optional;
+
 public class GetModelOrThrow {
     private static PostRepository postRepository;
     private static UserRepository userRepository;
@@ -28,6 +30,11 @@ public class GetModelOrThrow {
     public static User getUserOrThrow(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+    }
+
+    public static Optional<User> getOptionalUser(Long id) {
+        if (id == null) return Optional.empty();
+        return userRepository.findById(id);
     }
 
     public static Category getCategoryOrThrow(Long id) {

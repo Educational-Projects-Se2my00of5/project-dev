@@ -1,12 +1,12 @@
 package com.example.backend.mapper;
 
-import com.example.backend.dto.CommentDTO;
 import com.example.backend.dto.PostDTO;
 import com.example.backend.model.Comment;
 import com.example.backend.model.Post;
 import com.example.backend.model.User;
 import org.mapstruct.*;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Mapper(
@@ -24,25 +24,26 @@ public interface PostMapper {
     PostDTO.Response.FullInfoPost toFullInfoDTO(
             Post post,
             Set<Comment> rootComments,
-            @Context User currentUser
+            @Context Optional<User> currentUser
     );
 
     @Mapping(target = "shortUserInfo", source = "post.author")
     @Mapping(target = "categories", source = "post.categories")
     @Mapping(target = "likes", ignore = true)
     @Mapping(target = "hasLiked", ignore = true)
-    PostDTO.Response.ShortInfoPost toShortInfoDTO(Post post, @Context User currentUser);
+    PostDTO.Response.ShortInfoPost toShortInfoDTO(Post post, @Context Optional<User> currentUser);
 
 
     @AfterMapping
     default void completePostFullInfoDTO(
             Post post,
             @MappingTarget PostDTO.Response.FullInfoPost dto,
-            @Context User currentUser
+            @Context Optional<User> currentUser
     ) {
         if (post == null) return;
 
-        Long currentUserId = currentUser.getId();
+        User user = currentUser.orElse(null);
+        Long currentUserId = (user != null) ? user.getId() : null;
 
         // 1. Вычисляем количество лайков
         long likeCount = post.getLikes().size();
@@ -61,10 +62,16 @@ public interface PostMapper {
     }
 
     @AfterMapping
-    default void completePostShortInfoDTO(Post post, @MappingTarget PostDTO.Response.ShortInfoPost dto, @Context User currentUser) {
+    default void completePostShortInfoDTO(
+            Post post,
+            @MappingTarget PostDTO.Response.ShortInfoPost dto,
+            @Context Optional<User> currentUser
+    ) {
         if (post == null) return;
 
-        Long currentUserId = currentUser.getId();
+        User user = currentUser.orElse(null);
+        Long currentUserId = (user != null) ? user.getId() : null;
+
 
         // 1. Вычисляем количество лайков
         long likeCount = post.getLikes().size();

@@ -23,8 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.example.backend.util.GetModelOrThrow.getPostOrThrow;
-import static com.example.backend.util.GetModelOrThrow.getUserOrThrow;
+import static com.example.backend.util.GetModelOrThrow.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +43,8 @@ public class PostService {
             String titleFilter, Set<Category> categoriesFilter
     ) {
         Long currentUserId = authHeader != null ? jwtProvider.getUserIdFromAuthHeader(authHeader) : null;
-        User currentUser = getUserOrThrow(currentUserId);
+
+        Optional<User> currentUser = getOptionalUser(currentUserId);
 
         Specification<Post> spec = PostSpecification.byFilters(
                 userFilter,
@@ -64,7 +64,7 @@ public class PostService {
     public PostDTO.Response.FullInfoPost getPostById(String authHeader, Long id) {
         Long currentUserId = authHeader != null ? jwtProvider.getUserIdFromAuthHeader(authHeader) : null;
 
-        User currentUser = getUserOrThrow(currentUserId);
+        Optional<User> currentUser = getOptionalUser(currentUserId);
         Post post = getPostOrThrow(id);
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
@@ -87,13 +87,13 @@ public class PostService {
                 .build();
         newPost = postRepository.save(newPost);
 
-        return postMapper.toFullInfoDTO(newPost, Set.of(), author);
+        return postMapper.toFullInfoDTO(newPost, Set.of(), Optional.of(author));
     }
 
     public PostDTO.Response.FullInfoPost updatePostAdmin(String authHeader, Long id, PostDTO.Request.EditPost editPost) {
         Long userId = jwtProvider.getUserIdFromAuthHeader(authHeader);
 
-        User currentUser = getUserOrThrow(userId);
+        Optional<User> currentUser = getOptionalUser(userId);
         Post post = getPostOrThrow(id);
 
         Set<Category> categories = categoryRepository.findByIdIn(editPost.getCategoriesId());
@@ -161,7 +161,7 @@ public class PostService {
 
         Set<Comment> rootComments = commentRepository.findByPostAndParentCommentIsNull(post);
 
-        return postMapper.toFullInfoDTO(post, rootComments, currentUser);
+        return postMapper.toFullInfoDTO(post, rootComments, Optional.of(currentUser));
     }
 
 }
