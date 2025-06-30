@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обработка входа</title>
+    <link rel="stylesheet" href="./css/OauthHandler.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Сообщение о статусе, которое видно изначально -->
+        <h2 id="status-message">Обработка входа...</h2>
+
+        <!-- Сообщение об ошибке -->
+        <p id="oauth-error" class="error"></p>
+
+        <!-- Форма для нового пользователя, изначально скрыта -->
+        <form id="new-user-form" class="hidden">
+            <h2>Завершение регистрации</h2>
+            <p>Добро пожаловать! Поскольку вы здесь впервые, пожалуйста, укажите ваше имя пользователя и создайте пароль.</p>
+            
+            <div class="form-group">
+                <label for="username">Имя пользователя (логин):</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit">Сохранить и войти</button>
+        </form>
+    </div>
+
+    <!-- Подключаем скрипт в конце body -->
+    <script type="module" src="./js/OauthHandler.js"></script>
+</body>
+</html>
