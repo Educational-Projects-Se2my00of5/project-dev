@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/CreatePost.css">
+    <title>Создать категорию</title>
+    
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">Социальный Сайт</div>
+            <nav class="nav-links">
+                <a href="main.html">Главная</a>
+                <a href="Categories.html">Категории</a>
+                <a href="Profile.html">Профиль</a>
+                <a href="#">Выйти</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <h1 class="page-title">Создать категорию</h1>
+        <form class="create-post-form">
+            
+            <div class="form-group">
+                <label for="title" class="form-label">Название</label>
+                <input type="text" id="title" class="form-control" placeholder="Введите название категории" required>
+            </div>
+            
+            
+            <div class="form-group">
+                <label for="content" class="form-label">Описание</label>
+                <textarea id="content" class="form-control" placeholder="Напишите описание здесь..." required></textarea>
+            </div>
+            
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel">Отмена</button>
+                <button type="submit" class="btn btn-submit">Создать</button>
+            </div>
+        </form>
+    </div>
+
+    <script type="module" src="js/CreateCategory.js"></script>
+
+</body>
+</html>

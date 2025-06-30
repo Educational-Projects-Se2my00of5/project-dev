@@ -9,9 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const tagsContainer = document.getElementById('tags-container');
     const tagInput = document.getElementById('tag-input');
     const submitBtn = document.querySelector('.btn-submit');
-    
-    // Массив тегов
-    let tags = [];
+
     
     // Инициализация
     initForm();
@@ -34,18 +32,10 @@ document.addEventListener('DOMContentLoaded', function() {
     async function handleFormSubmit(e) {
         e.preventDefault();
         
-        // Валидация формы
-        if (!validateForm()) {
-            return;
-        }
-        
         // Подготовка данных
         const postData = {
-            title: titleInput.value.trim(),
-            content: contentInput.value.trim(),
-            // временно !!!
-            // categoryId: [categorySelect.value]
-            categoriesId: [1]
+            name: titleInput.value.trim(),
+            description: contentInput.value.trim()
         };
         
         // Отправка данных
@@ -53,62 +43,44 @@ document.addEventListener('DOMContentLoaded', function() {
             // Блокируем кнопку отправки
             submitBtn.disabled = true;
             submitBtn.textContent = 'Отправка...';
+
+            const accessToken = localStorage.getItem('accessToken');
+
             
             // Имитация запроса к серверу (в реальном коде заменить на реальный URL)
-            // const response = await fetch('https://api.example.com/posts', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify(postData)
-            // });
+            const response = await fetch('http://localhost:12345/api/admin/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify(postData)
+            });
             
-            // if (!response.ok) {
-            //     throw new Error('Ошибка при создании поста');
-            // }
+            if (!response.ok) {
+                throw new Error('Ошибка при создании категории');
+            }
             
-            // const result = await response.json();
+            const result = await response.json();
 
-            const result = await ApiClient.createPost(postData);
+            //const result = await ApiClient.createCategory(postData);
             
             // Успешное создание поста
-            showSuccessMessage(result.message || 'Пост успешно создан!');
+            showSuccessMessage(result.message || 'Категория успешно создана!');
             
             // Очищаем форму
             resetForm();
             
         } catch (error) {
             console.error('Ошибка:', error);
-            showErrorMessage(error.message || 'Произошла ошибка при создании поста');
+            showErrorMessage(error.message || 'Произошла ошибка при создании категории');
         } finally {
             // Разблокируем кнопку
             submitBtn.disabled = false;
             submitBtn.textContent = 'Опубликовать';
         }
     }
-    
-    // Валидация формы
-    function validateForm() {
-        // Проверка категории
-        if (!categorySelect.value) {
-            showFieldError(categorySelect, 'Выберите категорию');
-            return false;
-        }
-        
-        // Проверка заголовка
-        if (titleInput.value.trim().length < 5) {
-            showFieldError(titleInput, 'Заголовок должен содержать минимум 5 символов');
-            return false;
-        }
-        
-        // Проверка содержания
-        if (contentInput.value.trim().length < 20) {
-            showFieldError(contentInput, 'Содержание должно быть не менее 20 символов');
-            return false;
-        }
-        
-        return true;
-    }
+
     
     // Показать ошибку для поля
     function showFieldError(field, message) {

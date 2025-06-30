@@ -8,6 +8,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (categoryId) {
         loadCategory(categoryId);
         loadPosts(categoryId);
+
+        // Обработка кликов по карточкам постов
+        postsContainer.addEventListener('click', function(e) {
+            const postCard = e.target.closest('.post');
+            if (postCard && postCard.dataset.postId) {
+                window.location.href = `../Post.html?id=${postCard.dataset.postId}`;
+            }
+        });
+        
     } else {
         showError('Категория не найдена');
     }
@@ -15,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadCategory(id) {
         try {
             // В реальном приложении заменить на реальный API endpoint
-            const response = await fetch(`https://api.example.com/categories/${id}`);
+            const response = await fetch(`http://localhost:12345/api/categories/${id}`);
             
             if (!response.ok) {
                 throw new Error('Ошибка загрузки категории');
@@ -36,14 +45,26 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoading();
             
             // В реальном приложении заменить на реальный API endpoint
-            const response = await fetch(`https://api.example.com/categories/${categoryId}/posts`);
+            const response = await fetch(`http://localhost:12345/api/posts?page=0&size=20`);
             
             if (!response.ok) {
                 throw new Error('Ошибка загрузки постов');
             }
             
             const data = await response.json();
-            displayPosts(data.posts);
+
+            let posts = []
+
+            for(let i = 0; i < data.content.length; i++){
+                if (data.content[i].categories[0].id == categoryId){
+                    posts.push(data.content[i])
+                }
+
+            }
+
+
+
+            displayPosts(posts);
             
         } catch (error) {
             console.error('Ошибка:', error);
@@ -64,35 +85,43 @@ document.addEventListener('DOMContentLoaded', function() {
             postsContainer.appendChild(postElement);
         });
     }
-    
+
     function createPostElement(post) {
         const postElement = document.createElement('div');
         postElement.className = 'post';
+        postElement.dataset.postId = post.id; // Добавляем ID поста
         postElement.innerHTML = `
-            <div class="post-votes">
-                <button class="vote-btn">↑</button>
-                <div class="vote-count">${post.likesCount || 0}</div>
-                <button class="vote-btn">↓</button>
-            </div>
             <div class="post-content">
-                <h3 class="post-title"><a href="/post.html?id=${post.id}">${post.title}</a></h3>
-                <div class="post-meta">
-                    Опубликовано пользователем ${post.authorName}, ${post.date}
-                </div>
-                ${post.description ? `<p class="post-excerpt">${post.description}</p>` : ''}
-                <div class="post-tags">
-                    ${post.tags.map(tag => `<a href="/tag/${tag}" class="post-tag">#${tag}</a>`).join('')}
-                </div>
-                <div class="post-actions">
-                    <span class="post-action">${post.commentsCount || 0} комментариев</span>
-                    <span class="post-action">Поделиться</span>
-                    <span class="post-action">Сохранить</span>
-                </div>
+                <h3 class="post-title">${post.title}</h3>
+                <div class="post-meta">Опубликовано пользователем ${post.shortUserInfo.username}</div>
+                <span class="vote-count">${post.likes}</span>
+                <span>👍</span>
             </div>
         `;
-        
         return postElement;
     }
+    
+    // function createPostElement(post) {
+    //     const postElement = document.createElement('div');
+    //     postElement.className = 'post';
+    //     postElement.innerHTML = `
+    //         <div class="post-votes">
+    //             <button class="vote-btn">↑</button>
+    //             <div class="vote-count">${post.likesCount || 0}</div>
+    //             <button class="vote-btn">↓</button>
+    //         </div>
+    //         <div class="post-content">
+    //             <h3 class="post-title"><a href="/post.html?id=${post.id}">${post.title}</a></h3>
+    //             <div class="post-meta">
+    //                 Опубликовано пользователем ${post.authorName}, ${post.date}
+    //             </div>
+    //             ${post.description ? `<p class="post-excerpt">${post.description}</p>` : ''}
+
+    //         </div>
+    //     `;
+        
+    //     return postElement;
+    // }
     
     function showLoading() {
         postsContainer.innerHTML = '<div class="loading">Загрузка постов...</div>';

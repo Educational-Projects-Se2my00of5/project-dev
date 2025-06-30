@@ -1,4 +1,6 @@
+import ApiClient from './ApiClient.js';
 document.addEventListener('DOMContentLoaded', function() {
+
             // Элементы профиля
             const nicknameDisplay = document.getElementById('nickname-display');
             const editNicknameBtn = document.getElementById('edit-nickname-btn');
@@ -7,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const saveNicknameBtn = document.getElementById('save-nickname-btn');
             const cancelEditBtn = document.getElementById('cancel-edit-btn');
             const userAvatar = document.getElementById('user-avatar');
+
+            let profileEmail = document.querySelector('.profile-email')
+            let profileRole = document.querySelector('.profile-role')
             
             // Обработчики событий
             editNicknameBtn.addEventListener('click', showEditForm);
@@ -28,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (newNickname && newNickname !== nicknameDisplay.textContent) {
                     try {
                         // Имитация запроса к серверу
-                        const response = await fetch('https://api.example.com/profile/nickname', {
-                            method: 'POST',
+                        const response = await fetch('http://localhost:12345/api/me', {
+                            method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',
                             },
@@ -70,21 +75,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Загрузка данных профиля (имитация)
-            function loadProfileData() {
-                // В реальном приложении здесь будет запрос к серверу
-                const profileData = {
-                    nickname: "User123",
-                    email: "user@example.com",
-                    role: "Пользователь",
-                    postsCount: 24,
-                    commentsCount: 128,
-                    likesCount: "1.2k"
-                };
-                
-                // Обновляем данные на странице
-                nicknameDisplay.textContent = profileData.nickname;
-                nicknameInput.value = profileData.nickname;
-                userAvatar.textContent = profileData.nickname.charAt(0).toUpperCase();
+            async function loadProfileData() {
+
+                try {
+                    // Показываем состояние загрузки
+                    //showLoadingState();
+                    
+                    // Имитация запроса к серверу (в реальном коде заменить на реальный URL)
+                    // const response = await fetch('http://localhost:12345/api/me');
+                    
+                    // if (!response.ok) {
+                    //     throw new Error('Ошибка загрузки категорий');
+                    // }
+                    const data = await ApiClient.getUserProfile();
+                    
+                    // const data = await response.json();
+                    console.log(data)
+                    
+                    // Обновляем данные на странице
+                    nicknameDisplay.textContent = data.username;
+                    nicknameInput.value = data.username;
+                    userAvatar.textContent = data.username.charAt(0).toUpperCase();
+
+                    profileEmail.textContent = data.email;
+                    profileRole.textContent = data.roles[0].name;
+
+                } catch (error) {
+                    console.error('Ошибка загрузки категорий:', error);
+                }
                 
                 // Можно добавить обновление других полей
             }

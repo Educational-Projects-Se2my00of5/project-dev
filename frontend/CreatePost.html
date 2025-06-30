@@ -29,10 +29,10 @@
                 <select id="category" class="form-control" required>
                     <option value="" disabled selected>Выберите категорию</option>
                     <option value="programming">Программирование</option>
-                    <option value="technology">Технологии</option>
+                    <!-- <option value="technology">Технологии</option>
                     <option value="science">Наука</option>
                     <option value="art">Искусство</option>
-                    <option value="politics">Политика</option>
+                    <option value="politics">Политика</option> -->
                     <option value="sports">Спорт</option>
                 </select>
             </div>
@@ -42,20 +42,19 @@
                 <input type="text" id="title" class="form-control" placeholder="Введите название поста" required>
             </div>
             
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="description" class="form-label">Краткое описание</label>
                 <input type="text" id="description" class="form-control" placeholder="Кратко опишите содержание поста">
-            </div>
+            </div> -->
             
             <div class="form-group">
                 <label for="content" class="form-label">Содержание</label>
                 <textarea id="content" class="form-control" placeholder="Напишите ваш пост здесь..." required></textarea>
             </div>
             
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label class="form-label">Теги</label>
                 <div class="tags-container" id="tags-container">
-                    <!-- Теги будут добавляться здесь -->
                 </div>
                 <div class="tag-input-container">
                     <input type="text" class="tag-input" id="tag-input" placeholder="Добавьте теги">
@@ -67,7 +66,7 @@
                         <div class="tag-suggestion">#политика</div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             
             <div class="form-actions">
                 <button type="button" class="btn btn-cancel">Отмена</button>
@@ -76,7 +75,7 @@
         </form>
     </div>
 
-    <script src="js/CreatePost.js"></script>
+    <script type="module" src="js/CreatePost.js"></script>
 
 </body>
 </html>

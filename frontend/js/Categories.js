@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoriesContainer = document.querySelector('.categories-container');
     
     // Загрузка категорий при открытии страницы( временно заменил)
-    // loadCategories();
+    loadCategories();
 
     // Функция загрузки категорий с сервера
     async function loadCategories() {
@@ -12,16 +12,17 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoadingState();
             
             // Имитация запроса к серверу (в реальном коде заменить на реальный URL)
-            const response = await fetch('https://api.example.com/categories');
+            const response = await fetch('http://localhost:12345/api/categories');
             
             if (!response.ok) {
                 throw new Error('Ошибка загрузки категорий');
             }
             
             const data = await response.json();
+            console.log(data)
             
             // Отображаем полученные категории
-            displayCategories(data.categories);
+            displayCategories(data);
         } catch (error) {
             console.error('Ошибка загрузки категорий:', error);
             showErrorState();
@@ -107,58 +108,58 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Демонстрационные данные (удалить в реальном приложении)
-    function mockCategories() {
-        const mockData = {
-            categories: [
-                {
-                    id: 1,
-                    name: "Программирование",
-                    description: "Обсуждение языков программирования, фреймворков и алгоритмов",
-                    postsCount: "12.5k",
-                    subscribers: "56.7k"
-                },
-                {
-                    id: 2,
-                    name: "Технологии",
-                    description: "Новости и обсуждения гаджетов и IT-инноваций",
-                    postsCount: "8.2k",
-                    subscribers: "42.3k"
-                },
-                {
-                    id: 3,
-                    name: "Наука",
-                    description: "Физика, химия, биология и другие научные дисциплины",
-                    postsCount: "6.7k",
-                    subscribers: "38.1k"
-                },
-                {
-                    id: 4,
-                    name: "Искусство",
-                    description: "Живопись, музыка, литература и другие виды искусства",
-                    postsCount: "5.9k",
-                    subscribers: "31.4k"
-                },
-                {
-                    id: 5,
-                    name: "Политика",
-                    description: "Обсуждение внутренней и международной политики",
-                    postsCount: "7.3k",
-                    subscribers: "45.2k"
-                },
-                {
-                    id: 6,
-                    name: "Спорт",
-                    description: "Футбол, хоккей, баскетбол и другие виды спорта",
-                    postsCount: "4.8k",
-                    subscribers: "29.6k"
-                }
-            ]
-        };
+    // function mockCategories() {
+    //     const mockData = {
+    //         categories: [
+    //             {
+    //                 id: 1,
+    //                 name: "Программирование",
+    //                 description: "Обсуждение языков программирования, фреймворков и алгоритмов",
+    //                 postsCount: "12.5k",
+    //                 subscribers: "56.7k"
+    //             },
+    //             {
+    //                 id: 2,
+    //                 name: "Технологии",
+    //                 description: "Новости и обсуждения гаджетов и IT-инноваций",
+    //                 postsCount: "8.2k",
+    //                 subscribers: "42.3k"
+    //             },
+    //             {
+    //                 id: 3,
+    //                 name: "Наука",
+    //                 description: "Физика, химия, биология и другие научные дисциплины",
+    //                 postsCount: "6.7k",
+    //                 subscribers: "38.1k"
+    //             },
+    //             {
+    //                 id: 4,
+    //                 name: "Искусство",
+    //                 description: "Живопись, музыка, литература и другие виды искусства",
+    //                 postsCount: "5.9k",
+    //                 subscribers: "31.4k"
+    //             },
+    //             {
+    //                 id: 5,
+    //                 name: "Политика",
+    //                 description: "Обсуждение внутренней и международной политики",
+    //                 postsCount: "7.3k",
+    //                 subscribers: "45.2k"
+    //             },
+    //             {
+    //                 id: 6,
+    //                 name: "Спорт",
+    //                 description: "Футбол, хоккей, баскетбол и другие виды спорта",
+    //                 postsCount: "4.8k",
+    //                 subscribers: "29.6k"
+    //             }
+    //         ]
+    //     };
         
-        displayCategories(mockData.categories);
-    }
+    //     displayCategories(mockData.categories);
+    // }
 
-    // Для демонстрации используем моковые данные
-    // В реальном приложении эту строку нужно удалить
-    mockCategories();
+    // // Для демонстрации используем моковые данные
+    // // В реальном приложении эту строку нужно удалить
+    // mockCategories();
 });

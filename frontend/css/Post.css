@@ -160,7 +160,11 @@ header {
     cursor: pointer;
 }
 
-.post-action:hover {
+/* .post-action:hover {
+    color: #ff4500;
+} */
+
+#post-likes:hover {
     color: #ff4500;
 }
 
@@ -255,4 +259,9 @@ header {
     color: #888;
     text-align: center;
     padding: 20px 0;
+}
+
+.liked{
+    color: #000;
+    font-weight: bold;
 }
