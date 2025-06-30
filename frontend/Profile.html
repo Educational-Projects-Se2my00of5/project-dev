@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/Profile.css">
+    <title>Профиль</title>
+    
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">Социальный Сайт</div>
+            <nav class="nav-links">
+                <a href="main.html">Главная</a>
+                <a href="Categories.html">Категории</a>
+                <a href="Profile.html">Профиль</a>
+                <a href="#">Выйти</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar" id="user-avatar">U</div>
+                <div class="profile-info">
+                    <div class="profile-nickname">
+                        <span class="nickname-text" id="nickname-display">User123</span>
+                        <button class="edit-btn" id="edit-nickname-btn">✏️</button>
+                    </div>
+                    <div class="edit-form" id="nickname-edit-form">
+                        <div class="form-group">
+                            <input type="text" class="form-input" id="nickname-input" value="User123">
+                        </div>
+                        <div class="form-actions">
+                            <button class="profile-btn btn-primary" id="save-nickname-btn">Сохранить</button>
+                            <button class="profile-btn btn-secondary" id="cancel-edit-btn">Отмена</button>
+                        </div>
+                    </div>
+                    <div class="profile-email">user@example.com</div>
+                    <span class="profile-role">Пользователь</span>
+                </div>
+            </div>
+            
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Постов</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">128</div>
+                    <div class="stat-label">Комментариев</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">1.2k</div>
+                    <div class="stat-label">Лайков</div>
+                </div>
+            </div>
+            
+            <!-- <div class="profile-actions">
+                <button class="profile-btn btn-primary">Мои посты</button>
+                <button class="profile-btn btn-secondary">Настройки</button>
+            </div> -->
+        </div>
+    </div>
+
+    <script type="module" src="js/Profile.js"></script>
+</body>
+</html>
