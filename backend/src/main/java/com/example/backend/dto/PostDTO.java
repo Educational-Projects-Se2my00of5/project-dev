@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 
 import java.time.LocalDateTime;
@@ -26,7 +28,7 @@ public enum PostDTO {
             @NotBlank
             String content;
 
-            @NotBlank
+            @NotNull
             Set<Long> categoriesId;
         }
 
@@ -39,7 +41,7 @@ public enum PostDTO {
             @NotBlank
             String content;
 
-            @NotBlank
+            @NotNull
             Set<Long> categoriesId;
         }
 
@@ -48,7 +50,8 @@ public enum PostDTO {
     public enum Response {
         ;
 
-        @Data
+        @Getter
+        @Setter
         public static class FullInfoPost implements Id, ShortUserInfo, Title, Content, Likes,
                 HasLiked, CreateAt, UpdateAt, Categories, RootComments {
 
@@ -83,13 +86,14 @@ public enum PostDTO {
             Set<CommentDTO.Response.InfoComment> rootComments;
         }
 
-        @Data
+        @Getter
+        @Setter
         public static class ShortInfoPost implements Id, ShortUserInfo, Title, Likes, HasLiked, CreateAt, Categories {
 
             @NotNull
             Long id;
 
-            @NotBlank
+            @NotNull
             UserDTO.Response.ShortProfile shortUserInfo;
 
             @NotBlank

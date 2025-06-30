@@ -20,7 +20,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const newTokens = await api.getNewTokenPair(refreshToken);
         tokenService.saveTokens(newTokens.accessToken, newTokens.refreshToken);
-
+        localStorage.setItem('role', "user")
+        localStorage.setItem('accessToken', newTokens.accessToken);
+        localStorage.setItem('refreshToken', newTokens.refreshToken);    
         const userId = tokenService.getUserIdFromTokenCookie();
 
         if (isNewUser) {
@@ -54,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     await api.editMyPassword(null, password)
 
                     statusMessageEl.textContent = 'Регистрация завершена! Перенаправляем...';
-                    setTimeout(() => redirectTo('main.html'), 1000);
+                    setTimeout(() =>{window.location.href = 'main.html'}, 1000);
 
                 } catch (e) {
                     statusMessageEl.classList.add('hidden');
@@ -64,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         } else {
             statusMessageEl.textContent = 'Успешный вход! Перенаправляем...';
-            setTimeout(() => redirectTo('main.html'), 1000);
+            setTimeout(() => {window.location.href = 'main.html'}, 1000);
         }
     } catch (e) {
         statusMessageEl.classList.add('hidden');

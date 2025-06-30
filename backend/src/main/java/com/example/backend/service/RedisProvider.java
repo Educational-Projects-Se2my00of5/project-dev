@@ -36,7 +36,7 @@ public class RedisProvider {
         return stringRedisTemplate.hasKey(token);
     }
 
-    public void addToken(String userId, String token, Long expiration) {
+    public void addToken(String token, String userId, Long expiration) {
         // 1. Сохраняем основную связь: token -> userId
         stringRedisTemplate.opsForValue().set(token, userId, expiration);
 

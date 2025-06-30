@@ -10,16 +10,18 @@ import com.example.backend.model.User;
 import com.example.backend.repository.RoleRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.specification.UserSpecification;
+import com.example.backend.util.GetModelOrThrow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.backend.util.GetModelOrThrow.getUserOrThrow;
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final GetModelOrThrow getModelOrThrow;
 
     public UserDTO.Response.FullProfile getMyProfile(String authHeader) {
         final User user = getUserFromAuthHeader(authHeader);
@@ -51,10 +54,10 @@ public class UserService {
     }
 
     public MessageDTO.Response.GetMessage updatePassword(String authHeader, UserDTO.Request.EditPassword editPassword) {
-
         User user = getUserFromAuthHeader(authHeader);
 
-        if (passwordEncoder.matches(editPassword.getOldPassword(), user.getPassword())) {
+
+        if (user.getPassword() == null || passwordEncoder.matches(editPassword.getOldPassword(), user.getPassword())) {
             String newPassword = passwordEncoder.encode(editPassword.getPassword());
 
             user.setPassword(newPassword);
@@ -71,7 +74,7 @@ public class UserService {
     }
 
     public UserDTO.Response.ShortProfile getUser(Long id) {
-        final User user = getUserOrThrow(id);
+        final User user = getModelOrThrow.getUserOrThrow(id);
 
         return userMapper.toShortProfileDTO(user);
     }
@@ -101,7 +104,7 @@ public class UserService {
     }
 
     public UserDTO.Response.FullProfile editUser(Long id, UserDTO.Request.EditUser editUser) {
-        User user = getUserOrThrow(id);
+        User user = getModelOrThrow.getUserOrThrow(id);
 
         if (editUser.getUsername() != null) {
             user.setUsername(editUser.getUsername());
@@ -115,18 +118,45 @@ public class UserService {
         return userMapper.toFullProfileDTO(user);
     }
 
-    public UserDTO.Response.FullProfile giveAdmin(Long id) {
-        final User user = getUserOrThrow(id);
 
-        final Role role = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
+    @Transactional
+    public UserDTO.Response.FullProfile giveRole(Long id, UserDTO.Request.GiveRole giveRole) {
+        final User user = getModelOrThrow.getUserOrThrow(id);
 
-        if (!user.getRoles().contains(role)) {
-            user.getRoles().add(role);
+        String roleName = giveRole.getRoleName();
 
-            userRepository.save(user);
+        if (roleName.equals("ROLE_ADMIN")) {
+            final Role role = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
+            if (!user.getRoles().contains(role)) {
+                user.getRoles().add(role);
+                userRepository.save(user);
+                return userMapper.toFullProfileDTO(user);
+            }
+        } else if (roleName.startsWith("ROLE_MODERATOR_")) {
+            try {
+                Long categoryId = Long.parseLong(roleName.substring("ROLE_MODERATOR_".length()));
+                //Проверка, что есть такая категория
+                getModelOrThrow.getCategoryOrThrow(categoryId);
 
-            return userMapper.toFullProfileDTO(user);
+                // Получаем роль или создаём новую
+                final Role role = roleRepository.findByName(roleName).orElseGet(() -> {
+                    Role newRole = Role.builder().name(roleName).build();
+                    return roleRepository.save(newRole);
+                });
+
+                if (!user.getRoles().contains(role)) {
+                    user.getRoles().add(role);
+                    userRepository.save(user);
+                    return userMapper.toFullProfileDTO(user);
+                }
+            } catch (NumberFormatException e) {
+                throw new BadRequestException("Роли - " + roleName + ", не существует");
+            } catch (NotFoundException e) {
+                throw new BadRequestException("Нету категории под эту роль");
+            }
+
         }
-        throw new BadRequestException("Пользователь уже имеет роль админа");
+        throw new BadRequestException("Пользователь уже имеет данную роль");
     }
+
 }

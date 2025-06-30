@@ -7,6 +7,7 @@ import com.example.backend.mapper.CategoryMapper;
 import com.example.backend.model.Category;
 import com.example.backend.repository.CategoryRepository;
 import com.example.backend.repository.specification.CategorySpecification;
+import com.example.backend.util.GetModelOrThrow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -14,17 +15,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.backend.util.GetModelOrThrow.getCategoryOrThrow;
-
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final GetModelOrThrow getModelOrThrow;
 
     public CategoryDTO.Response.FullInfoCategory getCategory(Long id) {
-        return categoryMapper.toFullInfoDTO(getCategoryOrThrow(id));
+        return categoryMapper.toFullInfoDTO(getModelOrThrow.getCategoryOrThrow(id));
     }
 
     public List<CategoryDTO.Response.FullInfoCategory> getAllCategories(String nameFilter) {
@@ -48,7 +48,7 @@ public class CategoryService {
     }
 
     public CategoryDTO.Response.FullInfoCategory updateCategory(Long id, CategoryDTO.Request.CreateOrUpdateCategory category) {
-        Category oldCategory = getCategoryOrThrow(id);
+        Category oldCategory = getModelOrThrow.getCategoryOrThrow(id);
 
         oldCategory.setName(category.getName());
         oldCategory.setDescription(category.getDescription());
@@ -58,7 +58,7 @@ public class CategoryService {
     }
 
     public MessageDTO.Response.GetMessage deleteCategory(Long id) {
-        Category category = getCategoryOrThrow(id);
+        Category category = getModelOrThrow.getCategoryOrThrow(id);
         categoryRepository.delete(category);
         return new MessageDTO.Response.GetMessage("success delete category");
     }

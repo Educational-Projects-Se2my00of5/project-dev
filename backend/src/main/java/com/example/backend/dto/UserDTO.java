@@ -55,8 +55,6 @@ public enum UserDTO {
 
         @Value
         public static class EditPassword implements OldPassword, Password {
-
-            @NotBlank
             String oldPassword;
 
             @NotBlank
@@ -68,6 +66,11 @@ public enum UserDTO {
         public static class RefreshToken implements UserDTO.RefreshToken {
             @NotBlank
             String refreshToken;
+        }
+
+        @Value
+        public static class GiveRole implements RoleName {
+            String roleName;
         }
     }
 
@@ -145,6 +148,11 @@ public enum UserDTO {
     private interface Roles {
         @Schema(description = "Список ролей пользователя", example = "[\"ROLE_USER\"]")
         Set<Role> getRoles();
+    }
+
+    private interface RoleName {
+        @Schema(description = "Название роли", example = "ROLE_USER")
+        String getRoleName();
     }
 
     private interface AccessToken {

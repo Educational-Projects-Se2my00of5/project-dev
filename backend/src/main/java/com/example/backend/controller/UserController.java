@@ -78,10 +78,12 @@ public class UserController {
         return ResponseEntity.ok(userService.editUser(id, editUser));
     }
 
-    @GetMapping("admin/users/{id}/role")
+    @PostMapping("admin/users/{id}/role")
     @Operation(summary = "Назначение роли", tags = {ADMIN_TITLE}, security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<UserDTO.Response.FullProfile> giveAdmin(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.giveAdmin(id));
+    public ResponseEntity<UserDTO.Response.FullProfile> giveRole(
+            @PathVariable Long id,
+            @RequestBody UserDTO.Request.GiveRole giveRole) {
+        return ResponseEntity.ok(userService.giveRole(id, giveRole));
     }
 
 }
